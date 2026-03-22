@@ -7,13 +7,13 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --green: #1a4a2e; --green-mid: #2d6a47; --green-lt: #e8f0eb; --green-pale: #f3f7f4;
-  --orange: #c85a1a; --orange-lt: #fdf0e8;
-  --red: #a32d2d; --red-lt: #fcebeb;
-  --amber: #854f0b; --amber-lt: #faeeda;
-  --blue: #0c447c; --blue-lt: #e6f1fb;
-  --ink: #111a14; --ink-mid: #3a4a3e; --ink-lt: #6b7c70;
-  --rule: #d4ddd7; --bg: #f8faf8; --white: #ffffff;
+--green: #1a4a2e; --green-mid: #2d6a47; --green-lt: #e8f0eb; --green-pale: #f3f7f4;
+--orange: #c85a1a; --orange-lt: #fdf0e8;
+--red: #a32d2d; --red-lt: #fcebeb;
+--amber: #854f0b; --amber-lt: #faeeda;
+--blue: #0c447c; --blue-lt: #e6f1fb;
+--ink: #111a14; --ink-mid: #3a4a3e; --ink-lt: #6b7c70;
+--rule: #d4ddd7; --bg: #f8faf8; --white: #ffffff;
 }
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); padding: 1.5rem; }
@@ -66,128 +66,121 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--i
 </style>
 </head>
 <body>
-
 <div class="header">
-  <h1>MOI Neighborhood Dashboard</h1>
-  <p>Real data edition · Scores calculated using MOI algorithm applied to DOHMH Community Health Profiles 2021, New Yorkers for Parks Open Space Profiles 2021, and NYC Parks Capital Tracker · maillardhowellny.com/moi</p>
+<h1>MOI Neighborhood Dashboard</h1>
+<p>Real data edition · Scores calculated using MOI algorithm applied to DOHMH Community Health Profiles 2021, New Yorkers for Parks Open Space Profiles 2021, and NYC Parks Capital Tracker · maillardhowellny.com/movementopportunityindex</p>
 </div>
-
-<div class="disclaimer">Scores sourced from published public data. Harlem reclassified Tier 2 → Tier 1 based on real data. All scores pending Phase 2 full agency validation. Private fitness facilities excluded by design — equity choice.</div>
-
+<div class="disclaimer">Scores sourced from published public data. All scores pending Phase 2 full agency validation. Private fitness facilities excluded by design — equity choice.</div>
 <div class="summary" id="summary"></div>
-
 <div class="controls">
-  <span class="ctrl-label">Filter:</span>
-  <button class="ctrl-btn active" onclick="filterTier('all',this)">All</button>
-  <button class="ctrl-btn" onclick="filterTier(1,this)">Tier 1</button>
-  <button class="ctrl-btn" onclick="filterTier(2,this)">Tier 2</button>
-  <button class="ctrl-btn" onclick="filterTier(3,this)">Tier 3</button>
+<span class="ctrl-label">Filter:</span>
+<button class="ctrl-btn active" onclick="filterTier('all',this)">All</button>
+<button class="ctrl-btn" onclick="filterTier(1,this)">Tier 1</button>
+<button class="ctrl-btn" onclick="filterTier(2,this)">Tier 2</button>
+<button class="ctrl-btn" onclick="filterTier(3,this)">Tier 3</button>
 </div>
-
 <div class="sort-row">
-  <span class="sort-label">Sort:</span>
-  <button class="sort-btn active" onclick="sortBy('score',this)">Score</button>
-  <button class="sort-btn" onclick="sortBy('name',this)">Name</button>
-  <button class="sort-btn" onclick="sortBy('d1',this)">D1 Access</button>
-  <button class="sort-btn" onclick="sortBy('d4',this)">D4 Health</button>
+<span class="sort-label">Sort:</span>
+<button class="sort-btn active" onclick="sortBy('score',this)">Score</button>
+<button class="sort-btn" onclick="sortBy('name',this)">Name</button>
+<button class="sort-btn" onclick="sortBy('d1',this)">D1 Access</button>
+<button class="sort-btn" onclick="sortBy('d4',this)">D4 Health</button>
 </div>
-
 <div class="legend">
-  <div class="leg"><div class="leg-dot" style="background:#1D9E75"></div> D1 Access</div>
-  <div class="leg"><div class="leg-dot" style="background:#378ADD"></div> D2 Programs</div>
-  <div class="leg"><div class="leg-dot" style="background:#BA7517"></div> D3 Participation</div>
-  <div class="leg"><div class="leg-dot" style="background:#E24B4A"></div> D4 Health</div>
+<div class="leg"><div class="leg-dot" style="background:#1D9E75"></div> D1 Access</div>
+<div class="leg"><div class="leg-dot" style="background:#378ADD"></div> D2 Programs</div>
+<div class="leg"><div class="leg-dot" style="background:#BA7517"></div> D3 Participation</div>
+<div class="leg"><div class="leg-dot" style="background:#E24B4A"></div> D4 Health</div>
 </div>
-
 <div class="grid" id="grid"></div>
-
-<div class="footer-note">© 2026 Maillard Howell · Movement Opportunity Index · maillardhowellny.com/moi · Phase 1 proof of concept — Phase 2 data validation in progress</div>
-
+<div class="footer-note">© 2026 Maillard Howell · Movement Opportunity Index · maillardhowellny.com/movementopportunityindex · Phase 1 proof of concept — Phase 2 data validation in progress</div>
 <script>
 var N = [
-  { id:'brownsville', name:'Brownsville', boro:'Brooklyn', d1:19, d2:30, d3:32, d4:20, confidence:'high', constraint:'Supply constraint (Tier 1-A) — Rec Center closed', intervention:'Urgent infrastructure rebuild — $160M underway. Activate outdoor parks during construction gap.', sources:'NY4P Brownsville OSI; Rec Center CLOSED (NYC Parks 2025); DOHMH: LE 74, obesity ~35%, diabetes ~18%', notes:'Brownsville has the lowest composite score in dataset. Primary rec center offline for full reconstruction.' },
-  { id:'south_bronx', name:'South Bronx', boro:'Bronx', d1:28, d2:36, d3:38, d4:22, confidence:'high', constraint:'Supply constraint (Tier 1-A)', intervention:'New public facilities, park acreage, rec center capacity. Interim programming in existing parks.', sources:'NY4P BX1 2021: 0.7 ac/1k, 1 rec center, 93% within 5-min walk. DOHMH: obesity 42%, diabetes 20%, LE 77.6', notes:null },
-  { id:'east_ny', name:'East New York', boro:'Brooklyn', d1:25, d2:34, d3:36, d4:25, confidence:'medium', constraint:'Supply + Coverage constraint (Tier 1-A/C)', intervention:'NYCHA open space activation. Expand DYCD after-school sites. Free outdoor programming.', sources:'NY4P BK5 2021. DOHMH: poverty 33%, elevated chronic disease burden.', notes:'Significant NYCHA open space exists but is underactivated — fastest high-impact intervention.' },
-  { id:'harlem', name:'Harlem', boro:'Manhattan', d1:24, d2:45, d3:40, d4:28, confidence:'high', constraint:'Supply constraint (Tier 1-A) — private wellness ecosystem masks public deficit', intervention:'Restore public rec center access. Expand publicly accessible parkland. Free programming during reconstruction gap.', sources:'NY4P OSI: Central Harlem 0.3 ac/1k (least in Manhattan). Hansborough CLOSED (NYC Parks 2025). DOHMH CHP 2021: diabetes 20% East Harlem (highest NYC), obesity 30%.', notes:'REVISED: Theoretical model scored Harlem as Tier 2 (score 50). Real data places it firmly in Tier 1 (score 37). Private studios do not substitute for public infrastructure.' },
-  { id:'jamaica', name:'Jamaica', boro:'Queens', d1:36, d2:42, d3:40, d4:35, confidence:'medium', constraint:'Coverage constraint (Tier 2-2) — investment arriving, programs not yet built', intervention:'Pre-build programming relationships before Roy Wilkins opens. Design with community input now.', sources:'NYC Parks: Roy Wilkins $92M rec center + $55M pool (2025). DOHMH: Queens CD12 below-avg chronic disease burden.', notes:'Jamaica is in transition — major investment underway that could move it toward Tier 3 if programming matches infrastructure.' },
-  { id:'washington_hts', name:'Washington Heights', boro:'Manhattan', d1:49, d2:52, d3:46, d4:38, confidence:'medium', constraint:'Engagement gap (Tier 2-1) — access exists, participation lags', intervention:'Language-accessible outreach. Culturally relevant programming. Infrastructure exists — connect it to community.', sources:'Fort Tryon (67ac) + Inwood Hill Park. Highbridge Rec Center operational. DOHMH: obesity ~22%, ~50% not exercising regularly.', notes:null },
-  { id:'sunset_park', name:'Sunset Park', boro:'Brooklyn', d1:45, d2:54, d3:48, d4:42, confidence:'medium', constraint:'Program alignment gap (Tier 2-2) — facilities exist, programs need cultural alignment', intervention:'Bilingual instructors. Flexible timing for working families. Culturally specific programming for Latino and Chinese communities.', sources:'NY4P BK7. Sunset Park (24ac) + Rec Center with pool operational. DOHMH: poverty ~30%, mid-range chronic disease.', notes:null },
-  { id:'flushing', name:'Flushing', boro:'Queens', d1:61, d2:62, d3:58, d4:60, confidence:'medium', constraint:'Participation culture strength (Tier 3-3)', intervention:'Maintain Flushing Meadows access. Ensure recent immigrant communities are reached by programming.', sources:'Flushing Meadows (897ac). Aquatics Center + Ice Rink operational. DOHMH: Queens CD7 below-avg chronic disease.', notes:null },
-  { id:'park_slope', name:'Park Slope', boro:'Brooklyn', d1:87, d2:78, d3:76, d4:80, confidence:'high', constraint:'Ecosystem strength (Tier 3-2)', intervention:'Maintain. Study Prospect Park Alliance model for replication elsewhere.', sources:'Prospect Park (585ac). LeFrak Center year-round. DOHMH/CBS: obesity ~12%, LE 80+.', notes:'Park Slope (LE 80+) vs Brownsville (LE 74) — same borough, same MOI tools, opposite ends of the spectrum. The core equity argument.' },
-  { id:'upper_west', name:'Upper West Side', boro:'Manhattan', d1:98, d2:82, d3:78, d4:82, confidence:'high', constraint:'Infrastructure-led strength (Tier 3-1)', intervention:'Maintain and protect. Document what makes it work for replication in lower-tier neighborhoods.', sources:'Central Park (843ac) + Riverside Park (266ac). Multiple rec centers. DOHMH: obesity ~13%, diabetes ~6% — lowest in NYC.', notes:null },
+{ id:'brownsville', name:'Brownsville', boro:'Brooklyn', d1:19, d2:30, d3:32, d4:20, confidence:'high',
+constraint:'Supply constraint (Tier 1-A) — Rec Center closed', intervention:'Urgent infrastructure rebuild — $160M underway. Activate outdoor parks during construction gap.', sources:'NY4P Brownsville OSI; Rec Center CLOSED (NYC Parks 2025); DOHMH: LE 74, obesity ~35%, diabetes ~18%', notes:'Brownsville has the lowest composite score in dataset. Primary rec center offline for full reconstruction.' },
+{ id:'south_bronx', name:'South Bronx', boro:'Bronx', d1:28, d2:36, d3:38, d4:22, confidence:'high',
+constraint:'Supply constraint (Tier 1-A)', intervention:'New public facilities, park acreage, rec center capacity. Interim programming in existing parks.', sources:'NY4P BX1 2021: 0.7 ac/1k, 1 rec center, 93% within 5-min walk. DOHMH: obesity 42%, diabetes 20%, LE 77.6', notes:null },
+{ id:'east_ny', name:'East New York', boro:'Brooklyn', d1:25, d2:34, d3:36, d4:25, confidence:'medium',
+constraint:'Supply + Coverage constraint (Tier 1-A/C)', intervention:'NYCHA open space activation. Expand DYCD after-school sites. Free outdoor programming.', sources:'NY4P BK5 2021. DOHMH: poverty 33%, elevated chronic disease burden.', notes:'Significant NYCHA open space exists but is underactivated — fastest high-impact intervention.' },
+{ id:'harlem', name:'Harlem', boro:'Manhattan', d1:24, d2:45, d3:40, d4:28, confidence:'high',
+constraint:'Supply constraint (Tier 1-A) — private wellness ecosystem masks public deficit', intervention:'Restore public rec center access. Expand publicly accessible parkland. Free programming during reconstruction gap.', sources:'NY4P OSI: Central Harlem 0.3 ac/1k (least in Manhattan). Hansborough CLOSED (NYC Parks 2025). DOHMH CHP 2021: diabetes 20% East Harlem (highest NYC), obesity 30%.', notes:'Harlem composite score 37 places it firmly in Tier 1. Private studios do not substitute for public infrastructure.' },
+{ id:'jamaica', name:'Jamaica', boro:'Queens', d1:36, d2:42, d3:40, d4:35, confidence:'medium',
+constraint:'Coverage constraint (Tier 2-2) — investment arriving, programs not yet built', intervention:'Pre-build programming relationships before Roy Wilkins opens. Design with community input now.', sources:'NYC Parks: Roy Wilkins $92M rec center + $55M pool (2025). DOHMH: Queens CD12 below-avg chronic disease burden.', notes:'Jamaica is in transition — major investment underway that could move it toward Tier 3 if programming matches infrastructure.' },
+{ id:'washington_hts', name:'Washington Heights', boro:'Manhattan', d1:49, d2:52, d3:46, d4:38, confidence:'medium',
+constraint:'Engagement gap (Tier 2-1) — access exists, participation lags', intervention:'Language-accessible outreach. Culturally relevant programming. Infrastructure exists — connect it to community.', sources:'Fort Tryon (67ac) + Inwood Hill Park. Highbridge Rec Center operational. DOHMH: obesity ~22%, ~50% not exercising regularly.', notes:null },
+{ id:'sunset_park', name:'Sunset Park', boro:'Brooklyn', d1:45, d2:54, d3:48, d4:42, confidence:'medium',
+constraint:'Program alignment gap (Tier 2-2) — facilities exist, programs need cultural alignment', intervention:'Bilingual instructors. Flexible timing for working families. Culturally specific programming for Latino and Chinese communities.', sources:'NY4P BK7. Sunset Park (24ac) + Rec Center with pool operational. DOHMH: poverty ~30%, mid-range chronic disease.', notes:null },
+{ id:'flushing', name:'Flushing', boro:'Queens', d1:61, d2:62, d3:58, d4:60, confidence:'medium',
+constraint:'Participation culture strength (Tier 3-3)', intervention:'Maintain Flushing Meadows access. Ensure recent immigrant communities are reached by programming.', sources:'Flushing Meadows (897ac). Aquatics Center + Ice Rink operational. DOHMH: Queens CD7 below-avg chronic disease.', notes:null },
+{ id:'park_slope', name:'Park Slope', boro:'Brooklyn', d1:87, d2:78, d3:76, d4:80, confidence:'high',
+constraint:'Ecosystem strength (Tier 3-2)', intervention:'Maintain. Study Prospect Park Alliance model for replication elsewhere.', sources:'Prospect Park (585ac). LeFrak Center year-round. DOHMH/CBS: obesity ~12%, LE 80+.', notes:'Park Slope (LE 80+) vs Brownsville (LE 74) — same borough, same MOI tools, opposite ends of the spectrum. The core equity argument.' },
+{ id:'upper_west', name:'Upper West Side', boro:'Manhattan', d1:98, d2:82, d3:78, d4:82, confidence:'high',
+constraint:'Infrastructure-led strength (Tier 3-1)', intervention:'Maintain and protect. Document what makes it work for replication in lower-tier neighborhoods.', sources:'Central Park (843ac) + Riverside Park (266ac). Multiple rec centers. DOHMH: obesity ~13%, diabetes ~6% — lowest in NYC.', notes:null },
 ];
-
 N.forEach(n => {
-  n.composite = Math.round((n.d1+n.d2+n.d3+n.d4)/4);
-  n.tier = n.composite<=44?1:n.composite<=65?2:3;
-  n.tc = n.tier===1?'#A32D2D':n.tier===2?'#854F0B':'#1a4a2e';
-  n.tbg = n.tier===1?'#FCEBEB':n.tier===2?'#FAEEDA':'#EAF3DE';
+n.composite = Math.round((n.d1+n.d2+n.d3+n.d4)/4);
+n.tier = n.composite<=44?1:n.composite<=65?2:3;
+n.tc = n.tier===1?'#A32D2D':n.tier===2?'#854F0B':'#1a4a2e';
+n.tbg = n.tier===1?'#FCEBEB':n.tier===2?'#FAEEDA':'#EAF3DE';
 });
-
 var activeFilter='all', activeSort='score', openId=null;
-
 function filtered() {
-  var l = N.slice();
-  if (activeFilter!=='all') l=l.filter(n=>n.tier===activeFilter);
-  if (activeSort==='score') l.sort((a,b)=>a.composite-b.composite);
-  else if (activeSort==='name') l.sort((a,b)=>a.name.localeCompare(b.name));
-  else if (activeSort==='d1') l.sort((a,b)=>a.d1-b.d1);
-  else l.sort((a,b)=>a.d4-b.d4);
-  return l;
+var l = N.slice();
+if (activeFilter!=='all') l=l.filter(n=>n.tier===activeFilter);
+if (activeSort==='score') l.sort((a,b)=>a.composite-b.composite);
+else if (activeSort==='name') l.sort((a,b)=>a.name.localeCompare(b.name));
+else if (activeSort==='d1') l.sort((a,b)=>a.d1-b.d1);
+else l.sort((a,b)=>a.d4-b.d4);
+return l;
 }
-
 function renderSummary() {
-  var counts=[1,2,3].map(t=>N.filter(n=>n.tier===t).length);
-  var colors=['#A32D2D','#854F0B','#1a4a2e'];
-  var labels=['Tier 1 — immediate','Tier 2 — preventive','Tier 3 — maintain'];
-  document.getElementById('summary').innerHTML=counts.map((c,i)=>`<div class="sum-card"><div class="sum-num" style="color:${colors[i]}">${c}</div><div class="sum-lbl">${labels[i]}</div></div>`).join('');
+var counts=[1,2,3].map(t=>N.filter(n=>n.tier===t).length);
+var colors=['#A32D2D','#854F0B','#1a4a2e'];
+var labels=['Tier 1 — immediate','Tier 2 — preventive','Tier 3 — maintain'];
+document.getElementById('summary').innerHTML=counts.map((c,i)=>`<div class="sum-card"><div class="sum-num" style="color:${colors[i]}">${c}</div><div class="sum-lbl">${labels[i]}</div></div>`).join('');
 }
-
 function bar(v,color) { return `<div class="bar-bg"><div class="bar-fill" style="width:${v}%;background:${color}"></div></div>`; }
-
 function render() {
-  var list=filtered();
-  var g=document.getElementById('grid');
-  g.innerHTML='';
-  list.forEach(n=>{
-    var isOpen=openId===n.id;
-    var confColor=n.confidence==='high'?'#1D9E75':'#BA7517';
-    var confLabel=n.confidence==='high'?'Confirmed real data':'Sourced estimates';
-    var dimBgs=['#EAF3DE','#E6F1FB','#FAEEDA','#FCEBEB'];
-    var dimFgs=['#1a4a2e','#0C447C','#633806','#791F1F'];
-    var dimNames=['Access','Programs','Participation','Health'];
-    var dimVals=[n.d1,n.d2,n.d3,n.d4];
-    var c=document.createElement('div');
-    c.className='card'+(isOpen?' open':'');
-    c.style.borderColor=isOpen?n.tc:'';
-    c.innerHTML=`
-      <div class="card-top">
-        <div><div class="card-name">${n.name}</div><div class="card-boro">${n.boro}</div></div>
-        <span class="tier-pill" style="background:${n.tbg};color:${n.tc}">Tier ${n.tier}</span>
-        <div class="card-score" style="color:${n.tc}">${n.composite}</div>
-      </div>
-      <div class="bars">
-        ${bar(n.d1,'#1D9E75')}${bar(n.d2,'#378ADD')}${bar(n.d3,'#BA7517')}${bar(n.d4,'#E24B4A')}
-        <div class="bar-labels"><span>D1</span><span>D2</span><span>D3</span><span>D4</span><span style="color:${n.tc};font-weight:500">${n.composite}</span></div>
-      </div>
-      <div class="detail">
-        <div class="dim-grid">
-          ${dimVals.map((v,i)=>`<div class="dim-box" style="background:${dimBgs[i]}"><div class="dim-lbl" style="color:${dimFgs[i]}">D${i+1}</div><div class="dim-score" style="color:${dimFgs[i]}">${v}</div><div class="dim-name" style="color:${dimFgs[i]}">${dimNames[i]}</div></div>`).join('')}
-        </div>
-        <span class="constraint-badge" style="background:${n.tbg};color:${n.tc}">${n.constraint}</span>
-        <div class="detail-text"><strong>Intervention:</strong> ${n.intervention}</div>
-        <div class="detail-text"><strong>Sources:</strong> ${n.sources}</div>
-        ${n.notes?`<div class="detail-text" style="font-style:italic"><strong>Note:</strong> ${n.notes}</div>`:''}
-        <div class="dq"><div class="dq-dot" style="background:${confColor}"></div><span class="dq-lbl">${confLabel} · Phase 2 agency validation required for full precision</span></div>
-      </div>`;
-    c.onclick=()=>{ openId=isOpen?null:n.id; render(); };
-    g.appendChild(c);
-  });
+var list=filtered();
+var g=document.getElementById('grid');
+g.innerHTML='';
+list.forEach(n=>{
+var isOpen=openId===n.id;
+var confColor=n.confidence==='high'?'#1D9E75':'#BA7517';
+var confLabel=n.confidence==='high'?'Confirmed real data':'Sourced estimates';
+var dimBgs=['#EAF3DE','#E6F1FB','#FAEEDA','#FCEBEB'];
+var dimFgs=['#1a4a2e','#0C447C','#633806','#791F1F'];
+var dimNames=['Access','Programs','Participation','Health'];
+var dimVals=[n.d1,n.d2,n.d3,n.d4];
+var c=document.createElement('div');
+c.className='card'+(isOpen?' open':'');
+c.style.borderColor=isOpen?n.tc:'';
+c.innerHTML=`
+<div class="card-top">
+<div><div class="card-name">${n.name}</div><div class="card-boro">${n.boro}</div></div>
+<span class="tier-pill" style="background:${n.tbg};color:${n.tc}">Tier ${n.tier}</span>
+<div class="card-score" style="color:${n.tc}">${n.composite}</div>
+</div>
+<div class="bars">
+${bar(n.d1,'#1D9E75')}${bar(n.d2,'#378ADD')}${bar(n.d3,'#BA7517')}${bar(n.d4,'#E24B4A')}
+<div class="bar-labels"><span>D1</span><span>D2</span><span>D3</span><span>D4</span><span style="color:${n.tc};font-weight:500">${n.composite}</span></div>
+</div>
+<div class="detail">
+<div class="dim-grid">
+${dimVals.map((v,i)=>`<div class="dim-box" style="background:${dimBgs[i]}"><div class="dim-lbl" style="color:${dimFgs[i]}">D${i+1}</div><div class="dim-score" style="color:${dimFgs[i]}">${v}</div><div class="dim-name" style="color:${dimFgs[i]}">${dimNames[i]}</div></div>`).join('')}
+</div>
+<span class="constraint-badge" style="background:${n.tbg};color:${n.tc}">${n.constraint}</span>
+<div class="detail-text"><strong>Intervention:</strong> ${n.intervention}</div>
+<div class="detail-text"><strong>Sources:</strong> ${n.sources}</div>
+${n.notes?`<div class="detail-text" style="font-style:italic"><strong>Note:</strong> ${n.notes}</div>`:''}
+<div class="dq"><div class="dq-dot" style="background:${confColor}"></div><span class="dq-lbl">${confLabel} · Phase 2 agency validation required for full precision</span></div>
+</div>`;
+c.onclick=()=>{ openId=isOpen?null:n.id; render(); };
+g.appendChild(c);
+});
 }
-
 function filterTier(t,btn) { activeFilter=t; document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); openId=null; render(); }
 function sortBy(k,btn) { activeSort=k; document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); render(); }
-
 renderSummary(); render();
 </script>
 </body>

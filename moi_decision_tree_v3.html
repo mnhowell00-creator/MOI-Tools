@@ -7,10 +7,10 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --green:#1a4a2e;--green-mid:#2d6a47;--green-lt:#e8f0eb;--green-pale:#f3f7f4;
-  --orange:#c85a1a;--orange-lt:#fdf0e8;
-  --ink:#111a14;--ink-mid:#3a4a3e;--ink-lt:#6b7c70;
-  --rule:#d4ddd7;--bg:#f8faf8;--white:#ffffff;
+--green:#1a4a2e;--green-mid:#2d6a47;--green-lt:#e8f0eb;--green-pale:#f3f7f4;
+--orange:#c85a1a;--orange-lt:#fdf0e8;
+--ink:#111a14;--ink-mid:#3a4a3e;--ink-lt:#6b7c70;
+--rule:#d4ddd7;--bg:#f8faf8;--white:#ffffff;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);padding:1.5rem;}
@@ -24,8 +24,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);padd
 .preset-btn{font-size:0.72rem;padding:5px 12px;border-radius:20px;border:0.5px solid var(--rule);cursor:pointer;background:transparent;color:var(--ink-lt);transition:all 0.15s;}
 .preset-btn:hover{border-color:var(--green);color:var(--green);}
 .preset-btn.active{background:var(--green);color:var(--green-lt);border-color:var(--green);font-weight:500;}
-.preset-btn.revised{border-color:#854F0B;color:#854F0B;}
-.preset-btn.revised.active{background:#854F0B;color:#faeeda;border-color:#854F0B;}
 .sliders{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.2rem;}
 .slider-card{background:var(--white);border:0.5px solid var(--rule);border-radius:10px;padding:12px 14px;}
 .slider-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
@@ -62,177 +60,162 @@ input[type=range]{width:100%;accent-color:var(--green);}
 </style>
 </head>
 <body>
-
 <div class="header">
-  <h1>MOI Decision Tree</h1>
-  <p>Real data edition · Load a neighborhood preset or adjust sliders manually · The algorithm scores, tiers, and diagnoses in real time · maillardhowellny.com/moi</p>
+<h1>MOI Decision Tree</h1>
+<p>Real data edition · Load a neighborhood preset or adjust sliders manually · The algorithm scores, tiers, and diagnoses in real time · maillardhowellny.com/movementopportunityindex</p>
 </div>
-
-<div class="disclaimer">Neighborhood presets use real data from DOHMH CHP 2021, NY4P Open Space Profiles 2021, and NYC Parks Capital Tracker. Harlem ★ marked as revised from Tier 2 → Tier 1. All scores pending Phase 2 full agency validation.</div>
-
+<div class="disclaimer">Neighborhood presets use real data from DOHMH CHP 2021, NY4P Open Space Profiles 2021, and NYC Parks Capital Tracker. All scores pending Phase 2 full agency validation.</div>
 <div class="preset-section">
-  <div class="preset-label">Load a real neighborhood:</div>
-  <div class="presets">
-    <button class="preset-btn" onclick="load('south_bronx',this)">South Bronx</button>
-    <button class="preset-btn" onclick="load('brownsville',this)">Brownsville</button>
-    <button class="preset-btn" onclick="load('east_ny',this)">East New York</button>
-    <button class="preset-btn revised" onclick="load('harlem',this)">Harlem ★</button>
-    <button class="preset-btn" onclick="load('washington_hts',this)">Washington Heights</button>
-    <button class="preset-btn" onclick="load('jamaica',this)">Jamaica</button>
-    <button class="preset-btn" onclick="load('sunset_park',this)">Sunset Park</button>
-    <button class="preset-btn" onclick="load('flushing',this)">Flushing</button>
-    <button class="preset-btn" onclick="load('upper_west',this)">Upper West Side</button>
-    <button class="preset-btn" onclick="load('park_slope',this)">Park Slope</button>
-  </div>
+<div class="preset-label">Load a real neighborhood:</div>
+<div class="presets">
+<button class="preset-btn" onclick="load('south_bronx',this)">South Bronx</button>
+<button class="preset-btn" onclick="load('brownsville',this)">Brownsville</button>
+<button class="preset-btn" onclick="load('east_ny',this)">East New York</button>
+<button class="preset-btn" onclick="load('harlem',this)">Harlem</button>
+<button class="preset-btn" onclick="load('washington_hts',this)">Washington Heights</button>
+<button class="preset-btn" onclick="load('jamaica',this)">Jamaica</button>
+<button class="preset-btn" onclick="load('sunset_park',this)">Sunset Park</button>
+<button class="preset-btn" onclick="load('flushing',this)">Flushing</button>
+<button class="preset-btn" onclick="load('upper_west',this)">Upper West Side</button>
+<button class="preset-btn" onclick="load('park_slope',this)">Park Slope</button>
 </div>
-
+</div>
 <div class="sliders">
-  <div class="slider-card">
-    <div class="slider-top"><span class="slider-label">D1 — Facility Access</span><span class="slider-val" id="v1" style="color:#1D9E75">50</span></div>
-    <div class="slider-role">Parks, rec centers, open space per resident. Closed facilities score 0 on capacity indicator.</div>
-    <input type="range" min="0" max="100" value="50" id="s1" oninput="update()">
-    <div class="slider-src" id="src1"></div>
-  </div>
-  <div class="slider-card">
-    <div class="slider-top"><span class="slider-label">D2 — Programming</span><span class="slider-val" id="v2" style="color:#378ADD">50</span></div>
-    <div class="slider-role">Free and low-cost structured programs — classes, youth sports, senior mobility. Limited by facility closures.</div>
-    <input type="range" min="0" max="100" value="50" id="s2" oninput="update()">
-    <div class="slider-src" id="src2"></div>
-  </div>
-  <div class="slider-card">
-    <div class="slider-top"><span class="slider-label">D3 — Participation</span><span class="slider-val" id="v3" style="color:#BA7517">50</span></div>
-    <div class="slider-role">Adults meeting activity guidelines. Youth enrollment. Senior uptake. Gap vs D1 signals delivery constraint.</div>
-    <input type="range" min="0" max="100" value="50" id="s3" oninput="update()">
-    <div class="slider-src" id="src3"></div>
-  </div>
-  <div class="slider-card">
-    <div class="slider-top"><span class="slider-label">D4 — Health Burden</span><span class="slider-val" id="v4" style="color:#E24B4A">50</span></div>
-    <div class="slider-role">Diabetes, obesity, hypertension prevalence — inverse scored. Higher disease burden = lower score.</div>
-    <input type="range" min="0" max="100" value="50" id="s4" oninput="update()">
-    <div class="slider-src" id="src4"></div>
-  </div>
+<div class="slider-card">
+<div class="slider-top"><span class="slider-label">D1 — Facility Access</span><span class="slider-val" id="v1" style="color:#1D9E75">50</span></div>
+<div class="slider-role">Parks, rec centers, open space per resident. Closed facilities score 0 on capacity indicator.</div>
+<input type="range" min="0" max="100" value="50" id="s1" oninput="update()">
+<div class="slider-src" id="src1"></div>
 </div>
-
+<div class="slider-card">
+<div class="slider-top"><span class="slider-label">D2 — Programming</span><span class="slider-val" id="v2" style="color:#378ADD">50</span></div>
+<div class="slider-role">Free and low-cost structured programs — classes, youth sports, senior mobility. Limited by facility closures.</div>
+<input type="range" min="0" max="100" value="50" id="s2" oninput="update()">
+<div class="slider-src" id="src2"></div>
+</div>
+<div class="slider-card">
+<div class="slider-top"><span class="slider-label">D3 — Participation</span><span class="slider-val" id="v3" style="color:#BA7517">50</span></div>
+<div class="slider-role">Adults meeting activity guidelines. Youth enrollment. Senior uptake. Gap vs D1 signals delivery constraint.</div>
+<input type="range" min="0" max="100" value="50" id="s3" oninput="update()">
+<div class="slider-src" id="src3"></div>
+</div>
+<div class="slider-card">
+<div class="slider-top"><span class="slider-label">D4 — Health Burden</span><span class="slider-val" id="v4" style="color:#E24B4A">50</span></div>
+<div class="slider-role">Diabetes, obesity, hypertension prevalence — inverse scored. Higher disease burden = lower score.</div>
+<input type="range" min="0" max="100" value="50" id="s4" oninput="update()">
+<div class="slider-src" id="src4"></div>
+</div>
+</div>
 <div class="composite">
-  <div class="comp-left">
-    <div class="comp-lbl">MOI composite score</div>
-    <div class="comp-score" id="comp">50</div>
-    <div style="font-size:0.65rem;color:var(--ink-lt);margin-top:2px">(D1+D2+D3+D4) ÷ 4</div>
-  </div>
-  <div class="comp-right">
-    <div class="comp-bar-labels"><span>0</span><span style="color:#A32D2D">← 44 Tier 1</span><span style="color:#854F0B">Tier 2 65 →</span><span>100</span></div>
-    <div class="comp-bar-bg"><div class="comp-bar-fill" id="comp-bar" style="width:50%"></div></div>
-  </div>
+<div class="comp-left">
+<div class="comp-lbl">MOI composite score</div>
+<div class="comp-score" id="comp">50</div>
+<div style="font-size:0.65rem;color:var(--ink-lt);margin-top:2px">(D1+D2+D3+D4) / 4</div>
 </div>
-
+<div class="comp-right">
+<div class="comp-bar-labels"><span>0</span><span style="color:#A32D2D">44 Tier 1</span><span style="color:#854F0B">Tier 2 65</span><span>100</span></div>
+<div class="comp-bar-bg"><div class="comp-bar-fill" id="comp-bar" style="width:50%"></div></div>
+</div>
+</div>
 <div class="outputs">
-  <div class="out-card"><div class="out-lbl">Tier assignment</div><div class="out-val" id="out-tier">—</div><div class="out-sub" id="out-tier-sub">—</div></div>
-  <div class="out-card"><div class="out-lbl">Primary constraint</div><div class="out-val" id="out-constraint">—</div><div class="out-sub" id="out-constraint-sub">—</div></div>
-  <div class="out-card"><div class="out-lbl">Intervention class</div><div class="out-val" id="out-intervention">—</div><div class="out-sub" id="out-int-sub">—</div></div>
-  <div class="out-card"><div class="out-lbl">Timeline</div><div class="out-val" id="out-timeline">—</div><div class="out-sub" id="out-time-sub">—</div></div>
+<div class="out-card"><div class="out-lbl">Tier assignment</div><div class="out-val" id="out-tier">—</div><div class="out-sub" id="out-tier-sub">—</div></div>
+<div class="out-card"><div class="out-lbl">Primary constraint</div><div class="out-val" id="out-constraint">—</div><div class="out-sub" id="out-constraint-sub">—</div></div>
+<div class="out-card"><div class="out-lbl">Intervention class</div><div class="out-val" id="out-intervention">—</div><div class="out-sub" id="out-int-sub">—</div></div>
+<div class="out-card"><div class="out-lbl">Timeline</div><div class="out-val" id="out-timeline">—</div><div class="out-sub" id="out-time-sub">—</div></div>
 </div>
-
 <div class="causal">
-  <div class="causal-title">Causal chain — how each dimension contributes</div>
-  <div id="chain"></div>
+<div class="causal-title">Causal chain — how each dimension contributes</div>
+<div id="chain"></div>
 </div>
-
 <div class="source-box" id="source-box">Load a neighborhood preset or adjust the sliders to see the full diagnosis and causal chain.</div>
-
-<div class="footer-note">© 2026 Maillard Howell · Movement Opportunity Index · maillardhowellny.com/moi · Phase 1 proof of concept — Phase 2 data validation in progress</div>
-
+<div class="footer-note">© 2026 Maillard Howell · Movement Opportunity Index · maillardhowellny.com/movementopportunityindex · Phase 1 proof of concept — Phase 2 data validation in progress</div>
 <script>
 var PRESETS={
-  south_bronx:{d1:28,d2:36,d3:38,d4:22,src1:'NY4P BX1 2021: ~0.7 ac/1k, 1 rec center, 93% within 5-min walk',src2:'Shape Up NYC present; limited by rec center capacity and hours',src3:'DOHMH: below-avg physical activity; life expectancy 77.6 yrs',src4:'DOHMH CHP 2021: obesity 42%, diabetes 20%, LE 77.6 yrs'},
-  brownsville:{d1:19,d2:30,d3:32,d4:20,src1:'NY4P Brownsville OSI: Betsey Head 10.5ac/84k residents. Rec Center CLOSED for $160M rebuild',src2:'Severely limited by rec center closure. Outdoor-only programming',src3:'DOHMH: low participation consistent with limited infrastructure',src4:'DOHMH: LE 74 yrs (one of lowest in NYC), obesity ~35%, diabetes ~18%'},
-  east_ny:{d1:25,d2:34,d3:36,d4:25,src1:'NY4P BK5: limited parkland; significant NYCHA open space underactivated',src2:'DYCD programs present; limited rec center access',src3:'DOHMH: below citywide physical activity average',src4:'DOHMH: poverty 33%, elevated chronic disease burden'},
-  harlem:{d1:24,d2:45,d3:40,d4:28,src1:'NY4P OSI: Central Harlem 0.3 ac/1k (least in Manhattan). Hansborough Rec Center CLOSED',src2:'Outdoor Shape Up NYC. Hansborough closure limits indoor programming',src3:'DOHMH CHP 2021: 72% adults any activity; ~50% Central Harlem inactive on avg day',src4:'DOHMH CHP 2021: East Harlem diabetes 20% (highest NYC), obesity 30%'},
-  washington_hts:{d1:49,d2:52,d3:46,d4:38,src1:'Fort Tryon (67ac) + Inwood Hill Park; Highbridge Rec Center operational',src2:'Shape Up NYC + community programming; above-avg availability',src3:'DOHMH: ~50% not exercising regularly despite good access',src4:'DOHMH CHP: obesity ~22%, diabetes 10%+'},
-  jamaica:{d1:36,d2:42,d3:40,d4:35,src1:'Roy Wilkins Park: $92M rec center investment underway (NYC Parks 2025)',src2:'Programming gap — major investment arriving, programs not yet designed',src3:'DOHMH: below-avg participation; Queens CD12',src4:'DOHMH: Queens chronic disease burden below Bronx/Brooklyn'},
-  sunset_park:{d1:45,d2:54,d3:48,d4:42,src1:'Sunset Park (24ac) + Rec Center with pool operational',src2:'Sunset Park RC programs functional; above South Brooklyn average',src3:'DOHMH: moderate participation; program-community cultural fit gap',src4:'DOHMH: poverty ~30%, mid-range chronic disease burden'},
-  flushing:{d1:61,d2:62,d3:58,d4:60,src1:'Flushing Meadows (897ac) + Aquatics Center + Ice Rink operational',src2:'Queens Parks programming + Flushing Meadows facilities',src3:'DOHMH: moderate-high participation; some recent immigrant access gaps',src4:'DOHMH: Queens CD7 below-average chronic disease burden'},
-  upper_west:{d1:98,d2:82,d3:78,d4:82,src1:'Central Park (843ac) + Riverside Park (266ac). Multiple rec centers operational',src2:'Shape Up NYC + extensive nonprofit + rec center programming ecosystem',src3:'DOHMH: high physical activity; well above citywide average',src4:'DOHMH CHP: obesity ~13%, diabetes ~6% — among lowest in NYC'},
-  park_slope:{d1:87,d2:78,d3:76,d4:80,src1:'Prospect Park (585ac) + LeFrak Center at Lakeside year-round',src2:'Prospect Park Alliance programming + Prospect Park Rec Center',src3:'DOHMH: LE 80+; high participation culture; active community',src4:'DOHMH/CBS 2015: obesity ~12%, LE 80+. Same borough as Brownsville (LE 74) — 6 year gap'},
+south_bronx:{d1:28,d2:36,d3:38,d4:22,src1:'NY4P BX1 2021: ~0.7 ac/1k, 1 rec center, 93% within 5-min walk',src2:'Shape Up NYC present; limited by rec center capacity and hours',src3:'DOHMH: below-avg physical activity; life expectancy 77.6 yrs',src4:'DOHMH CHP 2021: obesity 42%, diabetes 20%, LE 77.6 yrs'},
+brownsville:{d1:19,d2:30,d3:32,d4:20,src1:'NY4P Brownsville OSI: Betsey Head 10.5ac/84k residents. Rec Center CLOSED for $160M rebuild',src2:'Severely limited by rec center closure. Outdoor-only programming',src3:'DOHMH: low participation consistent with limited infrastructure',src4:'DOHMH: LE 74 yrs (one of lowest in NYC), obesity ~35%, diabetes ~18%'},
+east_ny:{d1:25,d2:34,d3:36,d4:25,src1:'NY4P BK5: limited parkland; significant NYCHA open space underactivated',src2:'DYCD programs present; limited rec center access',src3:'DOHMH: below citywide physical activity average',src4:'DOHMH: poverty 33%, elevated chronic disease burden'},
+harlem:{d1:24,d2:45,d3:40,d4:28,src1:'NY4P OSI: Central Harlem 0.3 ac/1k (least in Manhattan). Hansborough Rec Center CLOSED',src2:'Outdoor Shape Up NYC. Hansborough closure limits indoor programming',src3:'DOHMH CHP 2021: 72% adults any activity; ~50% Central Harlem inactive on avg day',src4:'DOHMH CHP 2021: East Harlem diabetes 20% (highest NYC), obesity 30%'},
+washington_hts:{d1:49,d2:52,d3:46,d4:38,src1:'Fort Tryon (67ac) + Inwood Hill Park; Highbridge Rec Center operational',src2:'Shape Up NYC + community programming; above-avg availability',src3:'DOHMH: ~50% not exercising regularly despite good access',src4:'DOHMH CHP: obesity ~22%, diabetes 10%+'},
+jamaica:{d1:36,d2:42,d3:40,d4:35,src1:'Roy Wilkins Park: $92M rec center investment underway (NYC Parks 2025)',src2:'Programming gap — major investment arriving, programs not yet designed',src3:'DOHMH: below-avg participation; Queens CD12',src4:'DOHMH: Queens chronic disease burden below Bronx/Brooklyn'},
+sunset_park:{d1:45,d2:54,d3:48,d4:42,src1:'Sunset Park (24ac) + Rec Center with pool operational',src2:'Sunset Park RC programs functional; above South Brooklyn average',src3:'DOHMH: moderate participation; program-community cultural fit gap',src4:'DOHMH: poverty ~30%, mid-range chronic disease burden'},
+flushing:{d1:61,d2:62,d3:58,d4:60,src1:'Flushing Meadows (897ac) + Aquatics Center + Ice Rink operational',src2:'Queens Parks programming + Flushing Meadows facilities',src3:'DOHMH: moderate-high participation; some recent immigrant access gaps',src4:'DOHMH: Queens CD7 below-average chronic disease burden'},
+upper_west:{d1:98,d2:82,d3:78,d4:82,src1:'Central Park (843ac) + Riverside Park (266ac). Multiple rec centers operational',src2:'Shape Up NYC + extensive nonprofit + rec center programming ecosystem',src3:'DOHMH: high physical activity; well above citywide average',src4:'DOHMH CHP: obesity ~13%, diabetes ~6% — among lowest in NYC'},
+park_slope:{d1:87,d2:78,d3:76,d4:80,src1:'Prospect Park (585ac) + LeFrak Center at Lakeside year-round',src2:'Prospect Park Alliance programming + Prospect Park Rec Center',src3:'DOHMH: LE 80+; high participation culture; active community',src4:'DOHMH/CBS 2015: obesity ~12%, LE 80+. Same borough as Brownsville (LE 74) — 6 year gap'},
 };
-
 function load(id,btn){
-  var p=PRESETS[id];
-  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
-  if(btn)btn.classList.add('active');
-  ['1','2','3','4'].forEach(i=>{
-    document.getElementById('s'+i).value=p['d'+i];
-    document.getElementById('src'+i).textContent=p['src'+i]||'';
-  });
-  update();
+var p=PRESETS[id];
+document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+if(btn)btn.classList.add('active');
+['1','2','3','4'].forEach(i=>{
+document.getElementById('s'+i).value=p['d'+i];
+document.getElementById('src'+i).textContent=p['src'+i]||'';
+});
+update();
 }
-
 function vals(){return [1,2,3,4].map(i=>+document.getElementById('s'+i).value);}
-
 function diagnose(d1,d2,d3,d4){
-  var comp=Math.round((d1+d2+d3+d4)/4);
-  var tier=comp<=44?1:comp<=65?2:3;
-  var v={d1,d2,d3,d4};
-  var minK=Object.keys(v).reduce((a,b)=>v[a]<v[b]?a:b);
-  var constraint,cSub,intervention,iSub,timeline,tSub;
-  if(tier===1){
-    if(minK==='d1'){constraint='Supply constraint (Type A)';cSub='Facilities and open space are the primary deficit';intervention='Build — new public parks, rec centers, open space';iSub='Cannot solve with programming or outreach alone — physical infrastructure required';timeline='0–12 months';tSub='Immediate capital investment required';}
-    else if(minK==='d3'&&d1>35){constraint='Delivery constraint (Type B)';cSub='Access exists but residents are not using it';intervention='Outreach — community engagement, trust-building, cultural programming';iSub='New facilities will sit empty without addressing the delivery problem first';timeline='0–18 months';tSub='Community organizing must precede programming';}
-    else{constraint='Coverage constraint (Type C)';cSub='Programs exist but do not fit residents\' lives';intervention='Redesign — hours, language access, age-appropriate content';iSub='Programs likely exist but serve the wrong times, languages, or demographics';timeline='0–12 months';tSub='Program redesign is faster than construction — can show results quickly';}
-  } else if(tier===2){
-    if(d3<d1-10){constraint='Engagement gap (Type 1)';cSub='Infrastructure exists; participation underperforms';intervention='Activation — make existing programs more visible and accessible';iSub='Residents may not know what exists or face logistical barriers';timeline='6–18 months';tSub='Targeted engagement campaigns';}
-    else if(d2<d1-10){constraint='Program alignment gap (Type 2)';cSub='Programs exist but do not match community needs';intervention='Redesign — community input on timing, format, content';iSub='Community needs assessment is the starting point';timeline='6–18 months';tSub='Co-design with residents before redesign';}
-    else{constraint='Early risk signal (Type 3)';cSub='Performance appears adequate but trend is concerning';intervention='Preventive investment — strengthen weaker dimensions';iSub='Do not wait for Tier 1 — preventive action is far cheaper';timeline='12–24 months';tSub='Monitor quarterly; intervene before decline';}
-  } else {
-    if(minK==='d1'){constraint='Infrastructure-led strength (Type 1)';cSub='Strong facilities drive overall performance';}
-    else if(minK==='d2'){constraint='Program ecosystem strength (Type 2)';cSub='Programming quality drives participation';}
-    else{constraint='Participation culture strength (Type 3)';cSub='High community engagement drives outcomes';}
-    intervention='Maintain and protect'; iSub='Document what works — replicate in lower-tier neighborhoods'; timeline='Ongoing'; tSub='Quarterly monitoring; protect from decline';
-  }
-  return{comp,tier,minK,constraint,cSub,intervention,iSub,timeline,tSub};
+var comp=Math.round((d1+d2+d3+d4)/4);
+var tier=comp<=44?1:comp<=65?2:3;
+var v={d1,d2,d3,d4};
+var minK=Object.keys(v).reduce((a,b)=>v[a]<v[b]?a:b);
+var constraint,cSub,intervention,iSub,timeline,tSub;
+if(tier===1){
+if(minK==='d1'){constraint='Supply constraint (Type A)';cSub='Facilities and open space are the primary deficit';intervention='Build — new public parks, rec centers, open space';iSub='Cannot solve with programming or outreach alone — physical infrastructure required';timeline='0 to 12 months';tSub='Immediate capital investment required';}
+else if(minK==='d3'&&d1>35){constraint='Delivery constraint (Type B)';cSub='Access exists but residents are not using it';intervention='Outreach — community engagement, trust-building, cultural programming';iSub='New facilities will sit empty without addressing the delivery problem first';timeline='0 to 18 months';tSub='Community organizing must precede programming';}
+else{constraint='Coverage constraint (Type C)';cSub='Programs exist but do not fit residents lives';intervention='Redesign — hours, language access, age-appropriate content';iSub='Programs likely exist but serve the wrong times, languages, or demographics';timeline='0 to 12 months';tSub='Program redesign is faster than construction — can show results quickly';}
+} else if(tier===2){
+if(d3<d1-10){constraint='Engagement gap (Type 1)';cSub='Infrastructure exists; participation underperforms';intervention='Activation — make existing programs more visible and accessible';iSub='Residents may not know what exists or face logistical barriers';timeline='6 to 18 months';tSub='Targeted engagement campaigns';}
+else if(d2<d1-10){constraint='Program alignment gap (Type 2)';cSub='Programs exist but do not match community needs';intervention='Redesign — community input on timing, format, content';iSub='Community needs assessment is the starting point';timeline='6 to 18 months';tSub='Co-design with residents before redesign';}
+else{constraint='Early risk signal (Type 3)';cSub='Performance appears adequate but trend is concerning';intervention='Preventive investment — strengthen weaker dimensions';iSub='Do not wait for Tier 1 — preventive action is far cheaper';timeline='12 to 24 months';tSub='Monitor quarterly; intervene before decline';}
+} else {
+if(minK==='d1'){constraint='Infrastructure-led strength (Type 1)';cSub='Strong facilities drive overall performance';}
+else if(minK==='d2'){constraint='Program ecosystem strength (Type 2)';cSub='Programming quality drives participation';}
+else{constraint='Participation culture strength (Type 3)';cSub='High community engagement drives outcomes';}
+intervention='Maintain and protect'; iSub='Document what works — replicate in lower-tier neighborhoods';
+timeline='Ongoing'; tSub='Quarterly monitoring; protect from decline';
 }
-
+return{comp,tier,minK,constraint,cSub,intervention,iSub,timeline,tSub};
+}
 function chainDesc(key,val){
-  if(key==='d1') return val<30?'Critically low — facilities and open space are the binding constraint. Nothing else can compensate.':val<50?'Below adequate — facility gaps are limiting what is possible.':val<70?'Moderate — some access exists but not equitably distributed.':'Strong — physical infrastructure is a genuine community asset.';
-  if(key==='d2') return val<30?'Severely limited — even where space exists, programs are absent or inaccessible.':val<50?'Below average — programming volume and quality need investment.':val<70?'Moderate — programming exists but coverage is uneven.':'Strong — free programming is accessible and varied.';
-  if(key==='d3') return val<30?'Very low — residents are not moving at healthy levels. Both supply and delivery have failed.':val<50?'Below average — participation rates suggest barriers beyond facility availability.':val<70?'Moderate — most residents are somewhat active but gaps remain.':'High — participation culture is strong and broad-based.';
-  return val<30?'Severe — high chronic disease burden reflects long-term systemic failure.':val<50?'Elevated — chronic disease above citywide average. Prevention urgently needed.':val<70?'Moderate — chronic disease present but manageable with intervention.':'Low burden — strong health outcomes reflect cumulative benefit of movement opportunity.';
+if(key==='d1') return val<30?'Critically low — facilities and open space are the binding constraint. Nothing else can compensate.':val<50?'Below adequate — facility gaps are limiting what is possible.':val<70?'Moderate — some access exists but not equitably distributed.':'Strong — physical infrastructure is a genuine community asset.';
+if(key==='d2') return val<30?'Severely limited — even where space exists, programs are absent or inaccessible.':val<50?'Below average — programming volume and quality need investment.':val<70?'Moderate — programming exists but coverage is uneven.':'Strong — free programming is accessible and varied.';
+if(key==='d3') return val<30?'Very low — residents are not moving at healthy levels. Both supply and delivery have failed.':val<50?'Below average — participation rates suggest barriers beyond facility availability.':val<70?'Moderate — most residents are somewhat active but gaps remain.':'High — participation culture is strong and broad-based.';
+return val<30?'Severe — high chronic disease burden reflects long-term systemic failure.':val<50?'Elevated — chronic disease above citywide average. Prevention urgently needed.':val<70?'Moderate — chronic disease present but manageable with intervention.':'Low burden — strong health outcomes reflect cumulative benefit of movement opportunity.';
 }
-
 function update(){
-  var [d1,d2,d3,d4]=vals();
-  ['1','2','3','4'].forEach((i,idx)=>{
-    document.getElementById('v'+i).textContent=[d1,d2,d3,d4][idx];
-  });
-  var diag=diagnose(d1,d2,d3,d4);
-  var tc=diag.tier===1?'#A32D2D':diag.tier===2?'#854F0B':'#1a4a2e';
-  var compEl=document.getElementById('comp');
-  compEl.textContent=diag.comp; compEl.style.color=tc;
-  var bar=document.getElementById('comp-bar');
-  bar.style.width=diag.comp+'%'; bar.style.background=tc;
-  var tierNames={1:'Tier 1 — Immediate intervention',2:'Tier 2 — Preventive and optimize',3:'Tier 3 — Maintain and monitor'};
-  var tierSubs={1:'Score below 45. Urgent investment required within 12 months.',2:'Score 45–65. Preventive action needed to avoid decline.',3:'Score above 65. Protect and document what works.'};
-  var t=document.getElementById('out-tier'); t.textContent=tierNames[diag.tier]; t.style.color=tc;
-  document.getElementById('out-tier-sub').textContent=tierSubs[diag.tier];
-  var con=document.getElementById('out-constraint'); con.textContent=diag.constraint; con.style.color=tc;
-  document.getElementById('out-constraint-sub').textContent=diag.cSub;
-  document.getElementById('out-intervention').textContent=diag.intervention;
-  document.getElementById('out-int-sub').textContent=diag.iSub;
-  document.getElementById('out-timeline').textContent=diag.timeline;
-  document.getElementById('out-time-sub').textContent=diag.tSub;
-  var dimBgs=['#EAF3DE','#E6F1FB','#FAEEDA','#FCEBEB'];
-  var dimFgs=['#1a4a2e','#0C447C','#633806','#791F1F'];
-  var dimKeys=['d1','d2','d3','d4'];
-  var dimLabels=['D1 Access','D2 Programs','D3 Participation','D4 Health'];
-  var dimVals=[d1,d2,d3,d4];
-  var roleMap={d1:'root dimension',d2:'delivery mechanism',d3:'behavioral outcome',d4:'health consequence'};
-  document.getElementById('chain').innerHTML=dimKeys.map((k,i)=>{
-    var isPrimary=k===diag.minK;
-    var role=isPrimary?'primary driver':roleMap[k];
-    return `<div class="chain-row"><div class="chain-dim" style="background:${dimBgs[i]};color:${dimFgs[i]};font-weight:${isPrimary?'500':'400'}">${dimLabels[i]}: ${dimVals[i]}</div><div class="chain-arrow">→</div><div class="chain-text">${chainDesc(k,dimVals[i])}<span class="chain-role" style="background:${dimBgs[i]};color:${dimFgs[i]}">${role}</span></div></div>${i<3?'<div class="chain-connector"></div>':''}`
-  }).join('');
-  document.getElementById('source-box').innerHTML=`<strong>How to read this:</strong> The composite score (${diag.comp}) is the equal-weighted average of the four dimension scores. Constraint type is derived from the lowest-scoring dimension and overall tier. Load a real neighborhood preset to see how published data scores through the algorithm. All presets sourced from DOHMH CHP 2021 and NY4P Open Space Profiles 2021.`;
+var [d1,d2,d3,d4]=vals();
+['1','2','3','4'].forEach((i,idx)=>{
+document.getElementById('v'+i).textContent=[d1,d2,d3,d4][idx];
+});
+var diag=diagnose(d1,d2,d3,d4);
+var tc=diag.tier===1?'#A32D2D':diag.tier===2?'#854F0B':'#1a4a2e';
+var compEl=document.getElementById('comp');
+compEl.textContent=diag.comp; compEl.style.color=tc;
+var bar=document.getElementById('comp-bar');
+bar.style.width=diag.comp+'%'; bar.style.background=tc;
+var tierNames={1:'Tier 1 — Immediate intervention',2:'Tier 2 — Preventive and optimize',3:'Tier 3 — Maintain and monitor'};
+var tierSubs={1:'Score below 45. Urgent investment required within 12 months.',2:'Score 45 to 65. Preventive action needed to avoid decline.',3:'Score above 65. Protect and document what works.'};
+var t=document.getElementById('out-tier'); t.textContent=tierNames[diag.tier]; t.style.color=tc;
+document.getElementById('out-tier-sub').textContent=tierSubs[diag.tier];
+var con=document.getElementById('out-constraint'); con.textContent=diag.constraint; con.style.color=tc;
+document.getElementById('out-constraint-sub').textContent=diag.cSub;
+document.getElementById('out-intervention').textContent=diag.intervention;
+document.getElementById('out-int-sub').textContent=diag.iSub;
+document.getElementById('out-timeline').textContent=diag.timeline;
+document.getElementById('out-time-sub').textContent=diag.tSub;
+var dimBgs=['#EAF3DE','#E6F1FB','#FAEEDA','#FCEBEB'];
+var dimFgs=['#1a4a2e','#0C447C','#633806','#791F1F'];
+var dimKeys=['d1','d2','d3','d4'];
+var dimLabels=['D1 Access','D2 Programs','D3 Participation','D4 Health'];
+var dimVals=[d1,d2,d3,d4];
+var roleMap={d1:'root dimension',d2:'delivery mechanism',d3:'behavioral outcome',d4:'health consequence'};
+document.getElementById('chain').innerHTML=dimKeys.map((k,i)=>{
+var isPrimary=k===diag.minK;
+var role=isPrimary?'primary driver':roleMap[k];
+return `<div class="chain-row"><div class="chain-dim" style="background:${dimBgs[i]};color:${dimFgs[i]};font-weight:${isPrimary?'500':'400'}">${dimLabels[i]}: ${dimVals[i]}</div><div class="chain-arrow">to</div><div class="chain-text">${chainDesc(k,dimVals[i])}<span class="chain-role" style="background:${dimBgs[i]};color:${dimFgs[i]}">${role}</span></div></div>${i<3?'<div class="chain-connector"></div>':''}`
+}).join('');
+document.getElementById('source-box').innerHTML=`<strong>How to read this:</strong> The composite score (${diag.comp}) is the equal-weighted average of the four dimension scores. Constraint type is derived from the lowest-scoring dimension and overall tier. Load a real neighborhood preset to see how published data scores through the algorithm. All presets sourced from DOHMH CHP 2021 and NY4P Open Space Profiles 2021.`;
 }
-
 update();
 </script>
 </body>
