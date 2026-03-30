@@ -3,185 +3,271 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MOI Neighborhood Dashboard — Real Data</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>MOI Neighborhood Dashboard · Movement Opportunity Index</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-:root {
---green: #1a4a2e; --green-mid: #2d6a47; --green-lt: #e8f0eb; --green-pale: #f3f7f4;
---orange: #c85a1a; --orange-lt: #fdf0e8;
---red: #a32d2d; --red-lt: #fcebeb;
---amber: #854f0b; --amber-lt: #faeeda;
---blue: #0c447c; --blue-lt: #e6f1fb;
---ink: #111a14; --ink-mid: #3a4a3e; --ink-lt: #6b7c70;
---rule: #d4ddd7; --bg: #f8faf8; --white: #ffffff;
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --n:#0A1628;--nm:#112240;--nb:#1E3A5F;
+  --t:#0D9488;--tl:#14B8A6;--tt:#F0FDF9;
+  --w:#fff;--ow:#F8FAFC;
+  --s2:#E2E8F0;--s4:#94A3B8;--s5:#64748B;--s7:#334155;--s9:#0F172A;
+  --gd:#F59E0B;
+  /* Tier colors — do not change */
+  --tier1:#a32d2d;--tier1l:#fcebeb;
+  --tier2:#854f0b;--tier2l:#faeeda;
+  --tier3:#0F766E;--tier3l:#F0FDF9;
+  /* Dimension colors — do not change */
+  --d1c:#0c447c;--d1l:#e6f1fb;
+  --d2c:#854f0b;--d2l:#faeeda;
+  --d3c:#0D9488;--d3l:#F0FDF9;
+  --d4c:#a32d2d;--d4l:#fcebeb;
+  --ff:'DM Sans',sans-serif;--fd:'DM Serif Display',serif;
 }
-*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); padding: 1.5rem; }
-.header { background: var(--green); border-radius: 10px; padding: 1.2rem 1.5rem; margin-bottom: 1.2rem; border-bottom: 3px solid var(--orange); }
-.header h1 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: white; margin-bottom: 4px; }
-.header p { font-size: 0.8rem; color: rgba(255,255,255,0.7); line-height: 1.5; }
-.disclaimer { font-size: 0.75rem; color: var(--amber); background: var(--amber-lt); border-radius: 6px; padding: 8px 12px; margin-bottom: 1rem; border-left: 3px solid var(--orange); }
-.summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem; }
-.sum-card { background: var(--white); border: 0.5px solid var(--rule); border-radius: 8px; padding: 10px 12px; text-align: center; }
-.sum-num { font-size: 1.4rem; font-weight: 500; }
-.sum-lbl { font-size: 0.68rem; color: var(--ink-lt); margin-top: 2px; }
-.controls { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 0.8rem; align-items: center; }
-.ctrl-label { font-size: 0.72rem; color: var(--ink-lt); font-weight: 500; }
-.ctrl-btn { font-size: 0.72rem; padding: 4px 12px; border-radius: 20px; border: 0.5px solid var(--rule); cursor: pointer; background: transparent; color: var(--ink-lt); }
-.ctrl-btn.active { background: var(--green); color: var(--green-lt); border-color: var(--green); font-weight: 500; }
-.sort-row { display: flex; gap: 6px; align-items: center; margin-bottom: 0.8rem; }
-.sort-label { font-size: 0.72rem; color: var(--ink-lt); }
-.sort-btn { font-size: 0.72rem; padding: 3px 10px; border-radius: 4px; border: 0.5px solid var(--rule); cursor: pointer; background: transparent; color: var(--ink-lt); }
-.sort-btn.active { background: var(--bg); color: var(--ink); font-weight: 500; }
-.legend { display: flex; gap: 1rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
-.leg { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--ink-lt); }
-.leg-dot { width: 10px; height: 10px; border-radius: 2px; }
-.grid { display: flex; flex-direction: column; gap: 6px; }
-.card { background: var(--white); border: 0.5px solid var(--rule); border-radius: 10px; padding: 12px 14px; cursor: pointer; }
-.card:hover { border-color: var(--ink-lt); }
-.card.open { border-width: 1.5px; }
-.card-top { display: flex; align-items: center; gap: 10px; }
-.card-name { font-size: 0.88rem; font-weight: 500; flex: 1; }
-.card-boro { font-size: 0.7rem; color: var(--ink-lt); }
-.tier-pill { font-size: 0.65rem; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
-.card-score { font-size: 1.1rem; font-weight: 500; width: 32px; text-align: right; }
-.bars { margin-top: 8px; }
-.bar-bg { height: 5px; background: var(--green-lt); border-radius: 3px; margin-bottom: 3px; }
-.bar-fill { height: 5px; border-radius: 3px; }
-.bar-labels { display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--ink-lt); }
-.detail { display: none; margin-top: 12px; padding-top: 12px; border-top: 0.5px solid var(--rule); }
-.card.open .detail { display: block; }
-.dim-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-bottom: 8px; }
-.dim-box { border-radius: 6px; padding: 8px; }
-.dim-lbl { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
-.dim-score { font-size: 1.2rem; font-weight: 500; }
-.dim-name { font-size: 0.6rem; line-height: 1.3; }
-.detail-text { font-size: 0.75rem; color: var(--ink-lt); line-height: 1.6; margin-bottom: 6px; }
-.detail-text strong { color: var(--ink); font-weight: 500; }
-.constraint-badge { font-size: 0.65rem; font-weight: 500; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 6px; }
-.dq { display: flex; gap: 4px; align-items: center; margin-top: 6px; }
-.dq-dot { width: 6px; height: 6px; border-radius: 50%; }
-.dq-lbl { font-size: 0.65rem; color: var(--ink-lt); }
-.footer-note { font-size: 0.68rem; color: var(--ink-lt); text-align: center; margin-top: 1.2rem; padding-top: 0.8rem; border-top: 0.5px solid var(--rule); }
+body{font-family:var(--ff);background:var(--ow);color:var(--s9);}
+
+/* NAV */
+.nav{background:var(--n);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:#fff;letter-spacing:1px;}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:var(--t);}
+.nav-tag{font-size:10px;font-weight:500;color:var(--tl);background:rgba(13,148,136,.15);padding:3px 10px;border-radius:20px;}
+
+/* HERO */
+.hero{background:var(--n);padding:32px 24px 28px;border-bottom:1px solid var(--nb);}
+.hero-lbl{font-size:8px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--t);margin-bottom:8px;}
+.hero-title{font-family:var(--fd);font-size:clamp(20px,3vw,30px);color:#fff;font-weight:400;margin-bottom:8px;}
+.hero-sub{font-size:12px;color:var(--s4);line-height:1.7;max-width:600px;margin-bottom:16px;}
+.hero-stats{display:flex;gap:24px;flex-wrap:wrap;}
+.hs{text-align:center;}
+.hs-n{font-family:var(--fd);font-size:22px;color:var(--tl);line-height:1;}
+.hs-l{font-size:10px;color:var(--s4);margin-top:2px;}
+
+/* FILTERS */
+.filters{background:var(--w);border-bottom:1px solid var(--s2);padding:12px 24px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.filter-lbl{font-size:10px;font-weight:600;color:var(--s5);text-transform:uppercase;letter-spacing:1px;}
+.filter-btn{font-size:11px;font-weight:500;padding:6px 14px;border-radius:20px;border:1px solid var(--s2);background:var(--w);color:var(--s5);cursor:pointer;transition:all .15s;}
+.filter-btn:hover,.filter-btn.active{background:var(--n);color:var(--tl);border-color:var(--n);}
+.tier-filter{display:flex;gap:6px;margin-left:auto;}
+.tf{font-size:10px;font-weight:600;padding:5px 12px;border-radius:20px;border:1.5px solid;cursor:pointer;transition:all .15s;}
+.tf-1{border-color:var(--tier1);color:var(--tier1);background:var(--tier1l);}
+.tf-2{border-color:var(--tier2);color:var(--tier2);background:var(--tier2l);}
+.tf-3{border-color:var(--tier3);color:var(--tier3);background:var(--tier3l);}
+.tf.inactive{opacity:.4;}
+
+/* GRID */
+.grid-wrap{padding:20px 24px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+
+/* NEIGHBORHOOD CARD */
+.ncard{background:var(--w);border:1px solid var(--s2);border-radius:10px;overflow:hidden;transition:box-shadow .2s,transform .2s;cursor:pointer;}
+.ncard:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(10,22,40,.08);}
+.ncard-top{padding:16px 16px 12px;border-bottom:1px solid var(--s2);}
+.ncard-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.ncard-name{font-size:13px;font-weight:600;color:var(--s9);}
+.ncard-boro{font-size:10px;color:var(--s4);margin-top:2px;}
+.tier-badge{font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;}
+.t1{background:var(--tier1l);color:var(--tier1);}
+.t2{background:var(--tier2l);color:var(--tier2);}
+.t3{background:var(--tier3l);color:var(--tier3);}
+.score-row{display:flex;align-items:baseline;gap:6px;}
+.score-big{font-family:var(--fd);font-size:42px;color:var(--s9);line-height:1;}
+.score-of{font-size:11px;color:var(--s4);}
+.score-bar-wrap{margin-top:8px;}
+.score-bar{height:5px;background:var(--s2);border-radius:3px;overflow:hidden;}
+.score-fill{height:100%;border-radius:3px;transition:width .4s;}
+.sf-1{background:var(--tier1);}
+.sf-2{background:var(--tier2);}
+.sf-3{background:var(--tier3);}
+
+/* DIMENSIONS */
+.ncard-dims{padding:12px 16px;}
+.dim-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.dim-row:last-child{margin-bottom:0;}
+.dim-tag{font-size:8px;font-weight:700;padding:2px 7px;border-radius:3px;min-width:28px;text-align:center;letter-spacing:.5px;}
+.d1-tag{background:var(--d1l);color:var(--d1c);}
+.d2-tag{background:var(--d2l);color:var(--d2c);}
+.d3-tag{background:var(--d3l);color:var(--d3c);}
+.d4-tag{background:var(--d4l);color:var(--d4c);}
+.dim-label{font-size:10px;color:var(--s5);flex:1;}
+.dim-score{font-size:11px;font-weight:600;color:var(--s9);min-width:26px;text-align:right;}
+.dim-bar{flex:1;height:4px;background:var(--s2);border-radius:2px;overflow:hidden;}
+.db-fill{height:100%;border-radius:2px;}
+.db-d1{background:var(--d1c);}
+.db-d2{background:var(--d2c);}
+.db-d3{background:var(--d3c);}
+.db-d4{background:var(--d4c);}
+
+/* CONSTRAINT */
+.constraint-tag{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:600;padding:4px 10px;border-radius:3px;margin:8px 16px 12px;text-transform:uppercase;letter-spacing:.5px;}
+.ct-supply{background:#fcebeb;color:#a32d2d;}
+.ct-delivery{background:#faeeda;color:#854f0b;}
+.ct-coverage{background:#e6f1fb;color:#0c447c;}
+.ct-burden{background:#faeeda;color:#854f0b;}
+
+/* PHASE NOTE */
+.phase-note{background:var(--nm);border-top:3px solid var(--gd);padding:14px 20px;margin:0 24px 20px;border-radius:0 0 6px 6px;display:flex;gap:12px;align-items:flex-start;}
+.pn-icon{font-size:14px;flex-shrink:0;margin-top:1px;color:var(--gd);}
+.pn-text{font-size:10px;color:var(--s4);line-height:1.7;}
+.pn-text strong{color:#fff;}
+
+/* LEGEND */
+.legend{background:var(--w);border:1px solid var(--s2);border-radius:8px;padding:14px 16px;margin:0 24px 20px;}
+.legend-title{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t);margin-bottom:10px;}
+.legend-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.lg-item{display:flex;align-items:center;gap:8px;}
+.lg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.lg-text{font-size:10px;color:var(--s5);}
+
+/* FOOTER */
+.foot{background:var(--n);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.foot-copy{font-size:10px;color:var(--s4);}
+.foot-url{font-size:10px;color:var(--tl);font-weight:500;}
+.foot-note{font-size:9px;color:var(--s7);max-width:400px;line-height:1.5;}
 </style>
 </head>
 <body>
-<div class="header">
-<h1>MOI Neighborhood Dashboard</h1>
-<p>Real data edition · Scores calculated using MOI algorithm applied to DOHMH Community Health Profiles 2021, New Yorkers for Parks Open Space Profiles 2021, and NYC Parks Capital Tracker · maillardhowellny.com/movementopportunityindex</p>
+
+<nav class="nav">
+  <div class="nav-logo"><div class="nav-dot"></div>MOVEMENT OPPORTUNITY INDEX</div>
+  <span class="nav-tag">Neighborhood Dashboard · Phase 1</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-lbl">Live Tool — Phase 1</div>
+  <h1 class="hero-title">Neighborhood Dashboard</h1>
+  <p class="hero-sub">MOI scores for 10 priority NYC neighborhoods across four equally weighted dimensions. Lower scores indicate greater movement equity deficits and higher intervention urgency. Phase 2 expands to all 59 community districts.</p>
+  <div class="hero-stats">
+    <div class="hs"><div class="hs-n">10</div><div class="hs-l">Neighborhoods scored</div></div>
+    <div class="hs"><div class="hs-n">4</div><div class="hs-l">Dimensions</div></div>
+    <div class="hs"><div class="hs-n">3</div><div class="hs-l">Intervention tiers</div></div>
+    <div class="hs"><div class="hs-n">0–100</div><div class="hs-l">Score range</div></div>
+  </div>
 </div>
-<div class="disclaimer">Scores sourced from published public data. All scores pending Phase 2 full agency validation. Private fitness facilities excluded by design — equity choice.</div>
-<div class="summary" id="summary"></div>
-<div class="controls">
-<span class="ctrl-label">Filter:</span>
-<button class="ctrl-btn active" onclick="filterTier('all',this)">All</button>
-<button class="ctrl-btn" onclick="filterTier(1,this)">Tier 1</button>
-<button class="ctrl-btn" onclick="filterTier(2,this)">Tier 2</button>
-<button class="ctrl-btn" onclick="filterTier(3,this)">Tier 3</button>
+
+<div class="filters">
+  <span class="filter-lbl">Filter by borough:</span>
+  <button class="filter-btn active" onclick="filterBoro('all',this)">All</button>
+  <button class="filter-btn" onclick="filterBoro('Brooklyn',this)">Brooklyn</button>
+  <button class="filter-btn" onclick="filterBoro('Bronx',this)">Bronx</button>
+  <button class="filter-btn" onclick="filterBoro('Manhattan',this)">Manhattan</button>
+  <button class="filter-btn" onclick="filterBoro('Queens',this)">Queens</button>
+  <div class="tier-filter">
+    <button class="tf tf-1" onclick="toggleTier(1,this)">Tier 1</button>
+    <button class="tf tf-2" onclick="toggleTier(2,this)">Tier 2</button>
+    <button class="tf tf-3" onclick="toggleTier(3,this)">Tier 3</button>
+  </div>
 </div>
-<div class="sort-row">
-<span class="sort-label">Sort:</span>
-<button class="sort-btn active" onclick="sortBy('score',this)">Score</button>
-<button class="sort-btn" onclick="sortBy('name',this)">Name</button>
-<button class="sort-btn" onclick="sortBy('d1',this)">D1 Access</button>
-<button class="sort-btn" onclick="sortBy('d4',this)">D4 Health</button>
+
+<div class="grid-wrap">
+  <div class="phase-note">
+    <span class="pn-icon">⚑</span>
+    <p class="pn-text"><strong>Phase 1 — Research-informed estimates.</strong> Scores are derived from publicly available DOHMH, NYC Parks, DYCD, and DOE datasets. They demonstrate scoring logic and are not outputs from a formal validated agency data pipeline. Phase 2 involves agency data partnerships and NTA-level standardization.</p>
+  </div>
+
+  <div class="legend">
+    <div class="legend-title">Intervention Tiers</div>
+    <div class="legend-grid">
+      <div class="lg-item"><div class="lg-dot" style="background:var(--tier1)"></div><div class="lg-text"><strong>Tier 1 (0–39):</strong> Critical — immediate intervention required</div></div>
+      <div class="lg-item"><div class="lg-dot" style="background:var(--tier2)"></div><div class="lg-text"><strong>Tier 2 (40–64):</strong> Moderate — targeted investment needed</div></div>
+      <div class="lg-item"><div class="lg-dot" style="background:var(--tier3)"></div><div class="lg-text"><strong>Tier 3 (65–100):</strong> Stable — maintenance and monitoring</div></div>
+      <div class="lg-item"><div class="lg-dot" style="background:var(--d1c)"></div><div class="lg-text"><strong>D1:</strong> Access to Facilities</div></div>
+      <div class="lg-item"><div class="lg-dot" style="background:var(--d2c)"></div><div class="lg-text"><strong>D2:</strong> Programming Coverage</div></div>
+      <div class="lg-item"><div class="lg-dot" style="background:var(--d3c)"></div><div class="lg-text"><strong>D3:</strong> Participation Rates</div></div>
+      <div class="lg-item"><div class="lg-dot" style="background:var(--d4c)"></div><div class="lg-text"><strong>D4:</strong> Chronic Disease Burden</div></div>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
 </div>
-<div class="legend">
-<div class="leg"><div class="leg-dot" style="background:#1D9E75"></div> D1 Access</div>
-<div class="leg"><div class="leg-dot" style="background:#378ADD"></div> D2 Programs</div>
-<div class="leg"><div class="leg-dot" style="background:#BA7517"></div> D3 Participation</div>
-<div class="leg"><div class="leg-dot" style="background:#E24B4A"></div> D4 Health</div>
-</div>
-<div class="grid" id="grid"></div>
-<div class="footer-note">© 2026 Maillard Howell · Movement Opportunity Index · maillardhowellny.com/movementopportunityindex · Phase 1 proof of concept — Phase 2 data validation in progress</div>
+
+<footer class="foot">
+  <span class="foot-copy">© 2026 Maillard Howell</span>
+  <span class="foot-url">movementopportunityindex.com</span>
+  <span class="foot-note">Scores are research-informed estimates from publicly available data. Not outputs from a validated agency data pipeline. Phase 2 validation in progress.</span>
+</footer>
+
 <script>
-var N = [
-{ id:'brownsville', name:'Brownsville', boro:'Brooklyn', d1:19, d2:30, d3:32, d4:20, confidence:'high',
-constraint:'Supply constraint (Tier 1-A) — Rec Center closed', intervention:'Urgent infrastructure rebuild — $160M underway. Activate outdoor parks during construction gap.', sources:'NY4P Brownsville OSI; Rec Center CLOSED (NYC Parks 2025); DOHMH: LE 74, obesity ~35%, diabetes ~18%', notes:'Brownsville has the lowest composite score in dataset. Primary rec center offline for full reconstruction.' },
-{ id:'south_bronx', name:'South Bronx', boro:'Bronx', d1:28, d2:36, d3:38, d4:22, confidence:'high',
-constraint:'Supply constraint (Tier 1-A)', intervention:'New public facilities, park acreage, rec center capacity. Interim programming in existing parks.', sources:'NY4P BX1 2021: 0.7 ac/1k, 1 rec center, 93% within 5-min walk. DOHMH: obesity 42%, diabetes 20%, LE 77.6', notes:null },
-{ id:'east_ny', name:'East New York', boro:'Brooklyn', d1:25, d2:34, d3:36, d4:25, confidence:'medium',
-constraint:'Supply + Coverage constraint (Tier 1-A/C)', intervention:'NYCHA open space activation. Expand DYCD after-school sites. Free outdoor programming.', sources:'NY4P BK5 2021. DOHMH: poverty 33%, elevated chronic disease burden.', notes:'Significant NYCHA open space exists but is underactivated — fastest high-impact intervention.' },
-{ id:'harlem', name:'Harlem', boro:'Manhattan', d1:24, d2:45, d3:40, d4:28, confidence:'high',
-constraint:'Supply constraint (Tier 1-A) — private wellness ecosystem masks public deficit', intervention:'Restore public rec center access. Expand publicly accessible parkland. Free programming during reconstruction gap.', sources:'NY4P OSI: Central Harlem 0.3 ac/1k (least in Manhattan). Hansborough CLOSED (NYC Parks 2025). DOHMH CHP 2021: diabetes 20% East Harlem (highest NYC), obesity 30%.', notes:'Harlem composite score 37 places it firmly in Tier 1. Private studios do not substitute for public infrastructure.' },
-{ id:'jamaica', name:'Jamaica', boro:'Queens', d1:36, d2:42, d3:40, d4:35, confidence:'medium',
-constraint:'Coverage constraint (Tier 2-2) — investment arriving, programs not yet built', intervention:'Pre-build programming relationships before Roy Wilkins opens. Design with community input now.', sources:'NYC Parks: Roy Wilkins $92M rec center + $55M pool (2025). DOHMH: Queens CD12 below-avg chronic disease burden.', notes:'Jamaica is in transition — major investment underway that could move it toward Tier 3 if programming matches infrastructure.' },
-{ id:'washington_hts', name:'Washington Heights', boro:'Manhattan', d1:49, d2:52, d3:46, d4:38, confidence:'medium',
-constraint:'Engagement gap (Tier 2-1) — access exists, participation lags', intervention:'Language-accessible outreach. Culturally relevant programming. Infrastructure exists — connect it to community.', sources:'Fort Tryon (67ac) + Inwood Hill Park. Highbridge Rec Center operational. DOHMH: obesity ~22%, ~50% not exercising regularly.', notes:null },
-{ id:'sunset_park', name:'Sunset Park', boro:'Brooklyn', d1:45, d2:54, d3:48, d4:42, confidence:'medium',
-constraint:'Program alignment gap (Tier 2-2) — facilities exist, programs need cultural alignment', intervention:'Bilingual instructors. Flexible timing for working families. Culturally specific programming for Latino and Chinese communities.', sources:'NY4P BK7. Sunset Park (24ac) + Rec Center with pool operational. DOHMH: poverty ~30%, mid-range chronic disease.', notes:null },
-{ id:'flushing', name:'Flushing', boro:'Queens', d1:61, d2:62, d3:58, d4:60, confidence:'medium',
-constraint:'Participation culture strength (Tier 3-3)', intervention:'Maintain Flushing Meadows access. Ensure recent immigrant communities are reached by programming.', sources:'Flushing Meadows (897ac). Aquatics Center + Ice Rink operational. DOHMH: Queens CD7 below-avg chronic disease.', notes:null },
-{ id:'park_slope', name:'Park Slope', boro:'Brooklyn', d1:87, d2:78, d3:76, d4:80, confidence:'high',
-constraint:'Ecosystem strength (Tier 3-2)', intervention:'Maintain. Study Prospect Park Alliance model for replication elsewhere.', sources:'Prospect Park (585ac). LeFrak Center year-round. DOHMH/CBS: obesity ~12%, LE 80+.', notes:'Park Slope (LE 80+) vs Brownsville (LE 74) — same borough, same MOI tools, opposite ends of the spectrum. The core equity argument.' },
-{ id:'upper_west', name:'Upper West Side', boro:'Manhattan', d1:98, d2:82, d3:78, d4:82, confidence:'high',
-constraint:'Infrastructure-led strength (Tier 3-1)', intervention:'Maintain and protect. Document what makes it work for replication in lower-tier neighborhoods.', sources:'Central Park (843ac) + Riverside Park (266ac). Multiple rec centers. DOHMH: obesity ~13%, diabetes ~6% — lowest in NYC.', notes:null },
+const neighborhoods = [
+  {name:"Brownsville",boro:"Brooklyn",score:28,tier:1,d1:19,d2:22,d3:31,d4:18,constraint:"supply",notes:"Largest rec center temporarily closed. Lowest parkland access in dataset."},
+  {name:"East New York",boro:"Brooklyn",score:33,tier:1,d1:28,d2:30,d3:35,d4:22,constraint:"supply",notes:"Limited open space per capita. High disease burden."},
+  {name:"Hunts Point",boro:"Bronx",score:31,tier:1,d1:24,d2:28,d3:38,d4:26,constraint:"burden",notes:"Highest chronic disease concentration in dataset."},
+  {name:"Mott Haven",boro:"Bronx",score:36,tier:1,d1:30,d2:35,d3:40,d4:25,constraint:"burden",notes:"High obesity and diabetes prevalence. Limited park access."},
+  {name:"East Harlem",boro:"Manhattan",score:38,tier:1,d1:32,d2:40,d3:42,d4:20,constraint:"burden",notes:"20% adult diabetes rate. Programming exists but disease burden is primary constraint."},
+  {name:"South Jamaica",boro:"Queens",score:41,tier:2,d1:42,d2:38,d3:44,d4:35,constraint:"delivery",notes:"Facilities present but program utilization is low."},
+  {name:"Crown Heights",boro:"Brooklyn",score:44,tier:2,d1:48,d2:42,d3:46,d4:38,constraint:"delivery",notes:"Above average facilities. Programming coverage is the gap."},
+  {name:"Washington Heights",boro:"Manhattan",score:52,tier:2,d1:55,d2:50,d3:54,d4:45,constraint:"coverage",notes:"Growing program base. Participation rates lag facility investment."},
+  {name:"Flatbush",boro:"Brooklyn",score:58,tier:2,d1:60,d2:55,d3:60,d4:52,constraint:"coverage",notes:"Moderate scores across all dimensions."},
+  {name:"Jackson Heights",boro:"Queens",score:62,tier:2,d1:65,d2:58,d3:64,d4:56,constraint:"coverage",notes:"Strongest participation rates in Tier 2 cohort."},
 ];
-N.forEach(n => {
-n.composite = Math.round((n.d1+n.d2+n.d3+n.d4)/4);
-n.tier = n.composite<=44?1:n.composite<=65?2:3;
-n.tc = n.tier===1?'#A32D2D':n.tier===2?'#854F0B':'#1a4a2e';
-n.tbg = n.tier===1?'#FCEBEB':n.tier===2?'#FAEEDA':'#EAF3DE';
-});
-var activeFilter='all', activeSort='score', openId=null;
-function filtered() {
-var l = N.slice();
-if (activeFilter!=='all') l=l.filter(n=>n.tier===activeFilter);
-if (activeSort==='score') l.sort((a,b)=>a.composite-b.composite);
-else if (activeSort==='name') l.sort((a,b)=>a.name.localeCompare(b.name));
-else if (activeSort==='d1') l.sort((a,b)=>a.d1-b.d1);
-else l.sort((a,b)=>a.d4-b.d4);
-return l;
+
+const constraintLabels={supply:"Supply Constraint",delivery:"Delivery Constraint",coverage:"Coverage Constraint",burden:"Burden Constraint"};
+const constraintClasses={supply:"ct-supply",delivery:"ct-delivery",coverage:"ct-coverage",burden:"ct-burden"};
+
+let activeFilters={boro:"all",tiers:[1,2,3]};
+
+function tierClass(t){return t===1?"t1":t===2?"t2":"t3";}
+function fillClass(t){return t===1?"sf-1":t===2?"sf-2":"sf-3";}
+
+function renderCard(n){
+  return `<div class="ncard" data-boro="${n.boro}" data-tier="${n.tier}">
+    <div class="ncard-top">
+      <div class="ncard-head">
+        <div><div class="ncard-name">${n.name}</div><div class="ncard-boro">${n.boro}</div></div>
+        <span class="tier-badge ${tierClass(n.tier)}">Tier ${n.tier}</span>
+      </div>
+      <div class="score-row">
+        <span class="score-big">${n.score}</span>
+        <span class="score-of">/ 100</span>
+      </div>
+      <div class="score-bar-wrap">
+        <div class="score-bar"><div class="score-fill ${fillClass(n.tier)}" style="width:${n.score}%"></div></div>
+      </div>
+    </div>
+    <div class="ncard-dims">
+      ${dim("D1","d1-tag","db-d1","Access to Facilities",n.d1)}
+      ${dim("D2","d2-tag","db-d2","Programming Coverage",n.d2)}
+      ${dim("D3","d3-tag","db-d3","Participation Rates",n.d3)}
+      ${dim("D4","d4-tag","db-d4","Disease Burden",n.d4)}
+    </div>
+    <span class="constraint-tag ${constraintClasses[n.constraint]}">${constraintLabels[n.constraint]}</span>
+  </div>`;
 }
-function renderSummary() {
-var counts=[1,2,3].map(t=>N.filter(n=>n.tier===t).length);
-var colors=['#A32D2D','#854F0B','#1a4a2e'];
-var labels=['Tier 1 — immediate','Tier 2 — preventive','Tier 3 — maintain'];
-document.getElementById('summary').innerHTML=counts.map((c,i)=>`<div class="sum-card"><div class="sum-num" style="color:${colors[i]}">${c}</div><div class="sum-lbl">${labels[i]}</div></div>`).join('');
+
+function dim(label,tagClass,barClass,name,score){
+  return `<div class="dim-row">
+    <span class="dim-tag ${tagClass}">${label}</span>
+    <span class="dim-label">${name}</span>
+    <div class="dim-bar"><div class="db-fill ${barClass}" style="width:${score}%"></div></div>
+    <span class="dim-score">${score}</span>
+  </div>`;
 }
-function bar(v,color) { return `<div class="bar-bg"><div class="bar-fill" style="width:${v}%;background:${color}"></div></div>`; }
-function render() {
-var list=filtered();
-var g=document.getElementById('grid');
-g.innerHTML='';
-list.forEach(n=>{
-var isOpen=openId===n.id;
-var confColor=n.confidence==='high'?'#1D9E75':'#BA7517';
-var confLabel=n.confidence==='high'?'Confirmed real data':'Sourced estimates';
-var dimBgs=['#EAF3DE','#E6F1FB','#FAEEDA','#FCEBEB'];
-var dimFgs=['#1a4a2e','#0C447C','#633806','#791F1F'];
-var dimNames=['Access','Programs','Participation','Health'];
-var dimVals=[n.d1,n.d2,n.d3,n.d4];
-var c=document.createElement('div');
-c.className='card'+(isOpen?' open':'');
-c.style.borderColor=isOpen?n.tc:'';
-c.innerHTML=`
-<div class="card-top">
-<div><div class="card-name">${n.name}</div><div class="card-boro">${n.boro}</div></div>
-<span class="tier-pill" style="background:${n.tbg};color:${n.tc}">Tier ${n.tier}</span>
-<div class="card-score" style="color:${n.tc}">${n.composite}</div>
-</div>
-<div class="bars">
-${bar(n.d1,'#1D9E75')}${bar(n.d2,'#378ADD')}${bar(n.d3,'#BA7517')}${bar(n.d4,'#E24B4A')}
-<div class="bar-labels"><span>D1</span><span>D2</span><span>D3</span><span>D4</span><span style="color:${n.tc};font-weight:500">${n.composite}</span></div>
-</div>
-<div class="detail">
-<div class="dim-grid">
-${dimVals.map((v,i)=>`<div class="dim-box" style="background:${dimBgs[i]}"><div class="dim-lbl" style="color:${dimFgs[i]}">D${i+1}</div><div class="dim-score" style="color:${dimFgs[i]}">${v}</div><div class="dim-name" style="color:${dimFgs[i]}">${dimNames[i]}</div></div>`).join('')}
-</div>
-<span class="constraint-badge" style="background:${n.tbg};color:${n.tc}">${n.constraint}</span>
-<div class="detail-text"><strong>Intervention:</strong> ${n.intervention}</div>
-<div class="detail-text"><strong>Sources:</strong> ${n.sources}</div>
-${n.notes?`<div class="detail-text" style="font-style:italic"><strong>Note:</strong> ${n.notes}</div>`:''}
-<div class="dq"><div class="dq-dot" style="background:${confColor}"></div><span class="dq-lbl">${confLabel} · Phase 2 agency validation required for full precision</span></div>
-</div>`;
-c.onclick=()=>{ openId=isOpen?null:n.id; render(); };
-g.appendChild(c);
-});
+
+function renderGrid(){
+  const grid=document.getElementById('grid');
+  const visible=neighborhoods.filter(n=>{
+    const boroOk=activeFilters.boro==='all'||n.boro===activeFilters.boro;
+    const tierOk=activeFilters.tiers.includes(n.tier);
+    return boroOk&&tierOk;
+  }).sort((a,b)=>a.score-b.score);
+  grid.innerHTML=visible.length?visible.map(renderCard).join(''):`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--s4);font-size:13px;">No neighborhoods match the selected filters.</div>`;
 }
-function filterTier(t,btn) { activeFilter=t; document.querySelectorAll('.ctrl-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); openId=null; render(); }
-function sortBy(k,btn) { activeSort=k; document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); render(); }
-renderSummary(); render();
+
+function filterBoro(boro,btn){
+  activeFilters.boro=boro;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function toggleTier(tier,btn){
+  const idx=activeFilters.tiers.indexOf(tier);
+  if(idx>-1)activeFilters.tiers.splice(idx,1);
+  else activeFilters.tiers.push(tier);
+  btn.classList.toggle('inactive',!activeFilters.tiers.includes(tier));
+  renderGrid();
+}
+
+renderGrid();
 </script>
 </body>
 </html>

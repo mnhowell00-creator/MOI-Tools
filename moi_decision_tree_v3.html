@@ -3,220 +3,344 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MOI Decision Tree — Real Data</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>MOI Decision Tree · Movement Opportunity Index</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-:root {
---green:#1a4a2e;--green-mid:#2d6a47;--green-lt:#e8f0eb;--green-pale:#f3f7f4;
---orange:#c85a1a;--orange-lt:#fdf0e8;
---ink:#111a14;--ink-mid:#3a4a3e;--ink-lt:#6b7c70;
---rule:#d4ddd7;--bg:#f8faf8;--white:#ffffff;
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --n:#0A1628;--nm:#112240;--nb:#1E3A5F;
+  --t:#0D9488;--tl:#14B8A6;--tt:#F0FDF9;
+  --w:#fff;--ow:#F8FAFC;
+  --s2:#E2E8F0;--s4:#94A3B8;--s5:#64748B;--s7:#334155;--s9:#0F172A;
+  --gd:#F59E0B;
+  --tier1:#a32d2d;--tier1l:#fcebeb;
+  --tier2:#854f0b;--tier2l:#faeeda;
+  --tier3:#0F766E;--tier3l:#F0FDF9;
+  --d1c:#0c447c;--d1l:#e6f1fb;
+  --d2c:#854f0b;--d2l:#faeeda;
+  --d3c:#0D9488;--d3l:#F0FDF9;
+  --d4c:#a32d2d;--d4l:#fcebeb;
+  --ff:'DM Sans',sans-serif;--fd:'DM Serif Display',serif;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);padding:1.5rem;}
-.header{background:var(--green);border-radius:10px;padding:1.2rem 1.5rem;margin-bottom:1.2rem;border-bottom:3px solid var(--orange);}
-.header h1{font-family:'DM Serif Display',serif;font-size:1.3rem;color:white;margin-bottom:4px;}
-.header p{font-size:0.8rem;color:rgba(255,255,255,0.7);line-height:1.5;}
-.disclaimer{font-size:0.75rem;color:#854f0b;background:#faeeda;border-radius:6px;padding:8px 12px;margin-bottom:1rem;border-left:3px solid #c85a1a;}
-.preset-section{margin-bottom:1.2rem;}
-.preset-label{font-size:0.72rem;color:var(--ink-lt);font-weight:500;margin-bottom:6px;}
-.presets{display:flex;flex-wrap:wrap;gap:6px;}
-.preset-btn{font-size:0.72rem;padding:5px 12px;border-radius:20px;border:0.5px solid var(--rule);cursor:pointer;background:transparent;color:var(--ink-lt);transition:all 0.15s;}
-.preset-btn:hover{border-color:var(--green);color:var(--green);}
-.preset-btn.active{background:var(--green);color:var(--green-lt);border-color:var(--green);font-weight:500;}
-.sliders{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.2rem;}
-.slider-card{background:var(--white);border:0.5px solid var(--rule);border-radius:10px;padding:12px 14px;}
-.slider-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
-.slider-label{font-size:0.82rem;font-weight:500;}
-.slider-val{font-size:1.2rem;font-weight:500;}
-.slider-role{font-size:0.7rem;color:var(--ink-lt);margin-bottom:6px;line-height:1.4;}
-.slider-src{font-size:0.65rem;color:var(--ink-lt);margin-top:4px;font-style:italic;line-height:1.4;min-height:14px;}
-input[type=range]{width:100%;accent-color:var(--green);}
-.composite{display:flex;align-items:center;gap:14px;background:var(--white);border:0.5px solid var(--rule);border-radius:10px;padding:14px 16px;margin-bottom:1.2rem;}
-.comp-left{}
-.comp-lbl{font-size:0.72rem;color:var(--ink-lt);}
-.comp-score{font-size:2.2rem;font-weight:500;line-height:1;}
-.comp-right{flex:1;}
-.comp-bar-labels{display:flex;justify-content:space-between;font-size:0.65rem;color:var(--ink-lt);margin-bottom:3px;}
-.comp-bar-bg{height:8px;background:var(--green-lt);border-radius:4px;}
-.comp-bar-fill{height:8px;border-radius:4px;transition:width 0.4s ease,background 0.4s ease;}
-.outputs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.2rem;}
-.out-card{background:var(--white);border:0.5px solid var(--rule);border-radius:10px;padding:12px 14px;}
-.out-lbl{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-lt);margin-bottom:4px;}
-.out-val{font-size:0.88rem;font-weight:500;line-height:1.4;}
-.out-sub{font-size:0.72rem;color:var(--ink-lt);margin-top:3px;line-height:1.5;}
-.causal{background:var(--white);border:0.5px solid var(--rule);border-radius:10px;padding:14px 16px;margin-bottom:1.2rem;}
-.causal-title{font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-lt);margin-bottom:10px;}
-.chain-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;}
-.chain-row:last-child{margin-bottom:0;}
-.chain-dim{font-size:0.72rem;font-weight:500;padding:2px 8px;border-radius:4px;flex-shrink:0;width:90px;text-align:center;}
-.chain-arrow{font-size:0.8rem;color:var(--ink-lt);padding-top:2px;flex-shrink:0;}
-.chain-text{font-size:0.75rem;color:var(--ink-lt);line-height:1.55;flex:1;}
-.chain-role{font-size:0.6rem;font-weight:600;padding:1px 5px;border-radius:3px;display:inline-block;margin-left:4px;vertical-align:middle;}
-.chain-connector{width:2px;height:6px;background:var(--rule);margin:0 0 2px 45px;}
-.source-box{font-size:0.72rem;color:var(--ink-lt);background:var(--green-pale);border-radius:8px;padding:10px 14px;line-height:1.6;}
-.source-box strong{color:var(--ink);font-weight:500;}
-.footer-note{font-size:0.68rem;color:var(--ink-lt);text-align:center;margin-top:1.2rem;padding-top:0.8rem;border-top:0.5px solid var(--rule);}
+body{font-family:var(--ff);background:var(--ow);color:var(--s9);}
+
+.nav{background:var(--n);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:#fff;letter-spacing:1px;}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:var(--t);}
+.nav-tag{font-size:10px;font-weight:500;color:var(--tl);background:rgba(13,148,136,.15);padding:3px 10px;border-radius:20px;}
+
+.hero{background:var(--n);padding:28px 24px 24px;border-bottom:1px solid var(--nb);}
+.hero-lbl{font-size:8px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--t);margin-bottom:8px;}
+.hero-title{font-family:var(--fd);font-size:clamp(18px,2.5vw,28px);color:#fff;font-weight:400;margin-bottom:8px;}
+.hero-sub{font-size:12px;color:var(--s4);line-height:1.7;max-width:640px;}
+
+.wrap{padding:20px 24px;max-width:760px;margin:0 auto;}
+
+/* STEP INDICATOR */
+.steps{display:flex;align-items:center;gap:0;margin-bottom:20px;}
+.step{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:500;}
+.step-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;}
+.step-active .step-num{background:var(--t);color:#fff;}
+.step-done .step-num{background:var(--n);color:var(--tl);}
+.step-todo .step-num{background:var(--s2);color:var(--s5);}
+.step-active .step-lbl{color:var(--s9);font-weight:600;}
+.step-done .step-lbl{color:var(--t);}
+.step-todo .step-lbl{color:var(--s4);}
+.step-line{flex:1;height:1px;background:var(--s2);margin:0 6px;}
+.step-line.done{background:var(--t);}
+
+/* INPUT PANEL */
+.panel{background:var(--w);border:1px solid var(--s2);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.panel-head{background:var(--n);padding:14px 18px;display:flex;align-items:center;gap:10px;}
+.ph-num{width:26px;height:26px;border-radius:50%;background:var(--t);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ph-title{font-size:13px;font-weight:600;color:#fff;}
+.ph-sub{font-size:10px;color:var(--s4);margin-top:1px;}
+.panel-body{padding:18px;}
+
+/* NEIGHBORHOOD SELECTOR */
+.hood-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:12px;}
+.hood-btn{padding:8px 12px;border:1px solid var(--s2);border-radius:6px;background:var(--w);cursor:pointer;text-align:left;transition:all .15s;}
+.hood-btn:hover{border-color:var(--t);background:var(--tt);}
+.hood-btn.selected{border-color:var(--t);background:var(--tt);}
+.hb-name{font-size:11px;font-weight:600;color:var(--s9);}
+.hb-boro{font-size:9px;color:var(--s4);}
+.hb-score{font-size:10px;font-weight:600;color:var(--t);margin-top:2px;}
+.or-divider{text-align:center;font-size:10px;color:var(--s4);margin:10px 0;}
+
+/* SLIDER INPUTS */
+.dim-inputs{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.dim-input{background:var(--ow);border:1px solid var(--s2);border-radius:6px;padding:12px;}
+.di-head{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.di-tag{font-size:8px;font-weight:700;padding:2px 7px;border-radius:3px;}
+.di-t1{background:var(--d1l);color:var(--d1c);}
+.di-t2{background:var(--d2l);color:var(--d2c);}
+.di-t3{background:var(--d3l);color:var(--d3c);}
+.di-t4{background:var(--d4l);color:var(--d4c);}
+.di-lbl{font-size:10px;font-weight:500;color:var(--s9);}
+.di-val{font-family:var(--fd);font-size:22px;color:var(--s9);line-height:1;margin-bottom:6px;}
+.di-slider{width:100%;accent-color:var(--t);}
+
+/* ANALYZE BUTTON */
+.analyze-btn{width:100%;background:var(--t);color:#fff;font-family:var(--ff);font-size:13px;font-weight:600;padding:13px;border:none;border-radius:6px;cursor:pointer;transition:background .15s;margin-top:14px;}
+.analyze-btn:hover{background:#0B8279;}
+.reset-btn{width:100%;background:transparent;color:var(--s5);font-family:var(--ff);font-size:11px;padding:8px;border:1px solid var(--s2);border-radius:6px;cursor:pointer;transition:all .15s;margin-top:8px;}
+.reset-btn:hover{border-color:var(--s4);color:var(--s9);}
+
+/* RESULTS */
+.results{display:none;}
+.results.show{display:block;}
+
+.result-header{background:var(--n);border-radius:10px;padding:20px;margin-bottom:14px;text-align:center;}
+.rh-label{font-size:8px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--tl);margin-bottom:8px;}
+.rh-hood{font-family:var(--fd);font-size:22px;color:#fff;margin-bottom:6px;}
+.rh-score-row{display:flex;align-items:baseline;gap:6px;justify-content:center;margin-bottom:8px;}
+.rh-score{font-family:var(--fd);font-size:52px;color:#fff;line-height:1;}
+.rh-of{font-size:14px;color:var(--s4);}
+.tier-badge-lg{display:inline-block;font-size:11px;font-weight:700;padding:5px 16px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;}
+.tb-1{background:var(--tier1l);color:var(--tier1);}
+.tb-2{background:var(--tier2l);color:var(--tier2);}
+.tb-3{background:var(--tier3l);color:var(--tier3);}
+
+.result-dims{background:var(--w);border:1px solid var(--s2);border-radius:10px;padding:16px;margin-bottom:14px;}
+.rd-title{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t);margin-bottom:12px;}
+.rd-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.rd-row:last-child{margin-bottom:0;}
+.rd-tag{font-size:8px;font-weight:700;padding:2px 7px;border-radius:3px;min-width:30px;text-align:center;}
+.rd-label{font-size:11px;color:var(--s5);flex:1;}
+.rd-bar{flex:2;height:6px;background:var(--s2);border-radius:3px;overflow:hidden;}
+.rdb-fill{height:100%;border-radius:3px;}
+.rd-score{font-size:12px;font-weight:600;color:var(--s9);min-width:28px;text-align:right;}
+
+.result-diagnosis{background:var(--w);border:1px solid var(--s2);border-radius:10px;padding:16px;margin-bottom:14px;}
+.constraint-display{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:6px;margin-bottom:10px;}
+.cd-label{font-size:11px;font-weight:600;}
+.result-action{background:var(--nm);border-radius:10px;padding:16px;margin-bottom:14px;}
+.ra-title{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--tl);margin-bottom:8px;}
+.ra-heading{font-family:var(--fd);font-size:16px;color:#fff;margin-bottom:6px;}
+.ra-body{font-size:11px;color:var(--s4);line-height:1.7;}
+.ra-timeline{display:inline-block;font-size:9px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(13,148,136,.2);color:var(--tl);margin-top:8px;}
+
+.foot{background:var(--n);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.foot-copy{font-size:10px;color:var(--s4);}
+.foot-url{font-size:10px;color:var(--tl);font-weight:500;}
+.foot-note{font-size:9px;color:var(--s7);max-width:400px;line-height:1.5;}
 </style>
 </head>
 <body>
-<div class="header">
-<h1>MOI Decision Tree</h1>
-<p>Real data edition · Load a neighborhood preset or adjust sliders manually · The algorithm scores, tiers, and diagnoses in real time · maillardhowellny.com/movementopportunityindex</p>
+
+<nav class="nav">
+  <div class="nav-logo"><div class="nav-dot"></div>MOVEMENT OPPORTUNITY INDEX</div>
+  <span class="nav-tag">Decision Tree · Phase 1</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-lbl">Live Tool — Phase 1</div>
+  <h1 class="hero-title">Action Decision Tree</h1>
+  <p class="hero-sub">Select a neighborhood or enter dimension scores manually. The system derives the MOI score, intervention tier, primary constraint type, and recommended action class with a deployment timeline.</p>
 </div>
-<div class="disclaimer">Neighborhood presets use real data from DOHMH CHP 2021, NY4P Open Space Profiles 2021, and NYC Parks Capital Tracker. All scores pending Phase 2 full agency validation.</div>
-<div class="preset-section">
-<div class="preset-label">Load a real neighborhood:</div>
-<div class="presets">
-<button class="preset-btn" onclick="load('south_bronx',this)">South Bronx</button>
-<button class="preset-btn" onclick="load('brownsville',this)">Brownsville</button>
-<button class="preset-btn" onclick="load('east_ny',this)">East New York</button>
-<button class="preset-btn" onclick="load('harlem',this)">Harlem</button>
-<button class="preset-btn" onclick="load('washington_hts',this)">Washington Heights</button>
-<button class="preset-btn" onclick="load('jamaica',this)">Jamaica</button>
-<button class="preset-btn" onclick="load('sunset_park',this)">Sunset Park</button>
-<button class="preset-btn" onclick="load('flushing',this)">Flushing</button>
-<button class="preset-btn" onclick="load('upper_west',this)">Upper West Side</button>
-<button class="preset-btn" onclick="load('park_slope',this)">Park Slope</button>
+
+<div class="wrap">
+
+  <!-- INPUT: Select neighborhood or enter manually -->
+  <div class="panel">
+    <div class="panel-head">
+      <div class="ph-num">1</div>
+      <div><div class="ph-title">Select a neighborhood or enter scores manually</div><div class="ph-sub">Phase 1 covers 10 priority NYC neighborhoods</div></div>
+    </div>
+    <div class="panel-body">
+      <div class="hood-grid" id="hoodGrid"></div>
+      <div class="or-divider">— or enter scores manually below —</div>
+      <div class="dim-inputs">
+        <div class="dim-input">
+          <div class="di-head"><span class="di-tag di-t1">D1</span><span class="di-lbl">Access to Facilities</span></div>
+          <div class="di-val" id="d1val">50</div>
+          <input type="range" class="di-slider" id="d1" min="0" max="100" value="50" oninput="updateVal('d1',this.value)">
+        </div>
+        <div class="dim-input">
+          <div class="di-head"><span class="di-tag di-t2">D2</span><span class="di-lbl">Programming Coverage</span></div>
+          <div class="di-val" id="d2val">50</div>
+          <input type="range" class="di-slider" id="d2" min="0" max="100" value="50" oninput="updateVal('d2',this.value)">
+        </div>
+        <div class="dim-input">
+          <div class="di-head"><span class="di-tag di-t3">D3</span><span class="di-lbl">Participation Rates</span></div>
+          <div class="di-val" id="d3val">50</div>
+          <input type="range" class="di-slider" id="d3" min="0" max="100" value="50" oninput="updateVal('d3',this.value)">
+        </div>
+        <div class="dim-input">
+          <div class="di-head"><span class="di-tag di-t4">D4</span><span class="di-lbl">Disease Burden</span></div>
+          <div class="di-val" id="d4val">50</div>
+          <input type="range" class="di-slider" id="d4" min="0" max="100" value="50" oninput="updateVal('d4',this.value)">
+        </div>
+      </div>
+      <button class="analyze-btn" onclick="analyze()">Run Diagnosis →</button>
+      <button class="reset-btn" onclick="reset()">Reset</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+
+    <div class="result-header" id="resultHeader"></div>
+
+    <div class="result-dims" id="resultDims"></div>
+
+    <div class="result-diagnosis" id="resultDiagnosis"></div>
+
+    <div class="result-action" id="resultAction"></div>
+
+  </div>
+
 </div>
-</div>
-<div class="sliders">
-<div class="slider-card">
-<div class="slider-top"><span class="slider-label">D1 — Facility Access</span><span class="slider-val" id="v1" style="color:#1D9E75">50</span></div>
-<div class="slider-role">Parks, rec centers, open space per resident. Closed facilities score 0 on capacity indicator.</div>
-<input type="range" min="0" max="100" value="50" id="s1" oninput="update()">
-<div class="slider-src" id="src1"></div>
-</div>
-<div class="slider-card">
-<div class="slider-top"><span class="slider-label">D2 — Programming</span><span class="slider-val" id="v2" style="color:#378ADD">50</span></div>
-<div class="slider-role">Free and low-cost structured programs — classes, youth sports, senior mobility. Limited by facility closures.</div>
-<input type="range" min="0" max="100" value="50" id="s2" oninput="update()">
-<div class="slider-src" id="src2"></div>
-</div>
-<div class="slider-card">
-<div class="slider-top"><span class="slider-label">D3 — Participation</span><span class="slider-val" id="v3" style="color:#BA7517">50</span></div>
-<div class="slider-role">Adults meeting activity guidelines. Youth enrollment. Senior uptake. Gap vs D1 signals delivery constraint.</div>
-<input type="range" min="0" max="100" value="50" id="s3" oninput="update()">
-<div class="slider-src" id="src3"></div>
-</div>
-<div class="slider-card">
-<div class="slider-top"><span class="slider-label">D4 — Health Burden</span><span class="slider-val" id="v4" style="color:#E24B4A">50</span></div>
-<div class="slider-role">Diabetes, obesity, hypertension prevalence — inverse scored. Higher disease burden = lower score.</div>
-<input type="range" min="0" max="100" value="50" id="s4" oninput="update()">
-<div class="slider-src" id="src4"></div>
-</div>
-</div>
-<div class="composite">
-<div class="comp-left">
-<div class="comp-lbl">MOI composite score</div>
-<div class="comp-score" id="comp">50</div>
-<div style="font-size:0.65rem;color:var(--ink-lt);margin-top:2px">(D1+D2+D3+D4) / 4</div>
-</div>
-<div class="comp-right">
-<div class="comp-bar-labels"><span>0</span><span style="color:#A32D2D">44 Tier 1</span><span style="color:#854F0B">Tier 2 65</span><span>100</span></div>
-<div class="comp-bar-bg"><div class="comp-bar-fill" id="comp-bar" style="width:50%"></div></div>
-</div>
-</div>
-<div class="outputs">
-<div class="out-card"><div class="out-lbl">Tier assignment</div><div class="out-val" id="out-tier">—</div><div class="out-sub" id="out-tier-sub">—</div></div>
-<div class="out-card"><div class="out-lbl">Primary constraint</div><div class="out-val" id="out-constraint">—</div><div class="out-sub" id="out-constraint-sub">—</div></div>
-<div class="out-card"><div class="out-lbl">Intervention class</div><div class="out-val" id="out-intervention">—</div><div class="out-sub" id="out-int-sub">—</div></div>
-<div class="out-card"><div class="out-lbl">Timeline</div><div class="out-val" id="out-timeline">—</div><div class="out-sub" id="out-time-sub">—</div></div>
-</div>
-<div class="causal">
-<div class="causal-title">Causal chain — how each dimension contributes</div>
-<div id="chain"></div>
-</div>
-<div class="source-box" id="source-box">Load a neighborhood preset or adjust the sliders to see the full diagnosis and causal chain.</div>
-<div class="footer-note">© 2026 Maillard Howell · Movement Opportunity Index · maillardhowellny.com/movementopportunityindex · Phase 1 proof of concept — Phase 2 data validation in progress</div>
+
+<footer class="foot">
+  <span class="foot-copy">© 2026 Maillard Howell</span>
+  <span class="foot-url">movementopportunityindex.com</span>
+  <span class="foot-note">Phase 1 covers 10 priority NYC neighborhoods. Scores are research-informed estimates from publicly available data.</span>
+</footer>
+
 <script>
-var PRESETS={
-south_bronx:{d1:28,d2:36,d3:38,d4:22,src1:'NY4P BX1 2021: ~0.7 ac/1k, 1 rec center, 93% within 5-min walk',src2:'Shape Up NYC present; limited by rec center capacity and hours',src3:'DOHMH: below-avg physical activity; life expectancy 77.6 yrs',src4:'DOHMH CHP 2021: obesity 42%, diabetes 20%, LE 77.6 yrs'},
-brownsville:{d1:19,d2:30,d3:32,d4:20,src1:'NY4P Brownsville OSI: Betsey Head 10.5ac/84k residents. Rec Center CLOSED for $160M rebuild',src2:'Severely limited by rec center closure. Outdoor-only programming',src3:'DOHMH: low participation consistent with limited infrastructure',src4:'DOHMH: LE 74 yrs (one of lowest in NYC), obesity ~35%, diabetes ~18%'},
-east_ny:{d1:25,d2:34,d3:36,d4:25,src1:'NY4P BK5: limited parkland; significant NYCHA open space underactivated',src2:'DYCD programs present; limited rec center access',src3:'DOHMH: below citywide physical activity average',src4:'DOHMH: poverty 33%, elevated chronic disease burden'},
-harlem:{d1:24,d2:45,d3:40,d4:28,src1:'NY4P OSI: Central Harlem 0.3 ac/1k (least in Manhattan). Hansborough Rec Center CLOSED',src2:'Outdoor Shape Up NYC. Hansborough closure limits indoor programming',src3:'DOHMH CHP 2021: 72% adults any activity; ~50% Central Harlem inactive on avg day',src4:'DOHMH CHP 2021: East Harlem diabetes 20% (highest NYC), obesity 30%'},
-washington_hts:{d1:49,d2:52,d3:46,d4:38,src1:'Fort Tryon (67ac) + Inwood Hill Park; Highbridge Rec Center operational',src2:'Shape Up NYC + community programming; above-avg availability',src3:'DOHMH: ~50% not exercising regularly despite good access',src4:'DOHMH CHP: obesity ~22%, diabetes 10%+'},
-jamaica:{d1:36,d2:42,d3:40,d4:35,src1:'Roy Wilkins Park: $92M rec center investment underway (NYC Parks 2025)',src2:'Programming gap — major investment arriving, programs not yet designed',src3:'DOHMH: below-avg participation; Queens CD12',src4:'DOHMH: Queens chronic disease burden below Bronx/Brooklyn'},
-sunset_park:{d1:45,d2:54,d3:48,d4:42,src1:'Sunset Park (24ac) + Rec Center with pool operational',src2:'Sunset Park RC programs functional; above South Brooklyn average',src3:'DOHMH: moderate participation; program-community cultural fit gap',src4:'DOHMH: poverty ~30%, mid-range chronic disease burden'},
-flushing:{d1:61,d2:62,d3:58,d4:60,src1:'Flushing Meadows (897ac) + Aquatics Center + Ice Rink operational',src2:'Queens Parks programming + Flushing Meadows facilities',src3:'DOHMH: moderate-high participation; some recent immigrant access gaps',src4:'DOHMH: Queens CD7 below-average chronic disease burden'},
-upper_west:{d1:98,d2:82,d3:78,d4:82,src1:'Central Park (843ac) + Riverside Park (266ac). Multiple rec centers operational',src2:'Shape Up NYC + extensive nonprofit + rec center programming ecosystem',src3:'DOHMH: high physical activity; well above citywide average',src4:'DOHMH CHP: obesity ~13%, diabetes ~6% — among lowest in NYC'},
-park_slope:{d1:87,d2:78,d3:76,d4:80,src1:'Prospect Park (585ac) + LeFrak Center at Lakeside year-round',src2:'Prospect Park Alliance programming + Prospect Park Rec Center',src3:'DOHMH: LE 80+; high participation culture; active community',src4:'DOHMH/CBS 2015: obesity ~12%, LE 80+. Same borough as Brownsville (LE 74) — 6 year gap'},
+const neighborhoods = [
+  {name:"Brownsville",boro:"Brooklyn",d1:19,d2:22,d3:31,d4:18},
+  {name:"East New York",boro:"Brooklyn",d1:28,d2:30,d3:35,d4:22},
+  {name:"Hunts Point",boro:"Bronx",d1:24,d2:28,d3:38,d4:26},
+  {name:"Mott Haven",boro:"Bronx",d1:30,d2:35,d3:40,d4:25},
+  {name:"East Harlem",boro:"Manhattan",d1:32,d2:40,d3:42,d4:20},
+  {name:"South Jamaica",boro:"Queens",d1:42,d2:38,d3:44,d4:35},
+  {name:"Crown Heights",boro:"Brooklyn",d1:48,d2:42,d3:46,d4:38},
+  {name:"Washington Heights",boro:"Manhattan",d1:55,d2:50,d3:54,d4:45},
+  {name:"Flatbush",boro:"Brooklyn",d1:60,d2:55,d3:60,d4:52},
+  {name:"Jackson Heights",boro:"Queens",d1:65,d2:58,d3:64,d4:56},
+];
+
+const actions={
+  t1_supply:{heading:"Emergency infrastructure investment",body:"Facilities are absent or permanently closed. No programming is possible without physical infrastructure. The priority is capital investment in parks, recreation centers, or school gymnasium partnerships. Timeline is 12–36 months for new construction; 3–12 months for reopening closed facilities.",timeline:"12–36 month capital cycle"},
+  t1_delivery:{heading:"Emergency program activation",body:"Facilities exist but no structured programs run. Immediate activation of DYCD and Parks programming is the fastest lever. Focus on deploying existing Shape Up NYC capacity, after-school movement programs, and NYCHA community center activation. Timeline is 3–6 months.",timeline:"3–6 month activation"},
+  t1_burden:{heading:"Health-first intervention",body:"Chronic disease prevalence is so elevated it suppresses movement capacity. Clinical intervention must precede recreational programming. Partner with DOHMH and H+H on cardiometabolic screening, diabetes prevention, and metabolic health programs. Movement programming follows in phase two of the intervention.",timeline:"6–18 month multi-phase"},
+  t2_supply:{heading:"Targeted facility investment",body:"Access gaps exist but are not acute. Prioritize repair, reopening, and public-private partnerships. Activate NYCHA campus spaces, school facilities, and DOE gyms for community use during non-school hours. Timeline is 6–18 months.",timeline:"6–18 month investment cycle"},
+  t2_delivery:{heading:"Program expansion and activation",body:"Infrastructure is adequate. Focus on increasing program frequency, extending hours, and recruiting community-based organizations to run programming in existing spaces. Leverage DYCD community schools grants and Parks partnership frameworks.",timeline:"3–9 month activation"},
+  t2_coverage:{heading:"Outreach and participation strategy",body:"Programs and facilities are present but residents are not participating. Invest in culturally relevant outreach, subsidized access programs, trusted community messenger campaigns, and reduced-barrier enrollment. Partner with CBOs and faith institutions for local reach.",timeline:"6–12 month engagement"},
+  t3_any:{heading:"Maintenance and monitoring",body:"Current conditions are stable. Focus on sustaining program quality, monitoring participation trends, and preventing backslide. This neighborhood should serve as a model for neighboring communities.",timeline:"Ongoing monitoring"},
 };
-function load(id,btn){
-var p=PRESETS[id];
-document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
-if(btn)btn.classList.add('active');
-['1','2','3','4'].forEach(i=>{
-document.getElementById('s'+i).value=p['d'+i];
-document.getElementById('src'+i).textContent=p['src'+i]||'';
-});
-update();
+
+function calcScore(d1,d2,d3,d4){return Math.round((parseInt(d1)+parseInt(d2)+parseInt(d3)+parseInt(d4))/4);}
+
+function getTier(score){return score<40?1:score<65?2:3;}
+
+function getConstraint(d1,d2,d3,d4){
+  const scores=[parseInt(d1),parseInt(d2),parseInt(d3),parseInt(d4)];
+  const labels=['supply','delivery','coverage','burden'];
+  // D4 burden check — if it's the lowest and below threshold
+  if(scores[3]<30&&scores[3]===Math.min(...scores))return'burden';
+  const minIdx=scores.indexOf(Math.min(...scores));
+  return labels[minIdx];
 }
-function vals(){return [1,2,3,4].map(i=>+document.getElementById('s'+i).value);}
-function diagnose(d1,d2,d3,d4){
-var comp=Math.round((d1+d2+d3+d4)/4);
-var tier=comp<=44?1:comp<=65?2:3;
-var v={d1,d2,d3,d4};
-var minK=Object.keys(v).reduce((a,b)=>v[a]<v[b]?a:b);
-var constraint,cSub,intervention,iSub,timeline,tSub;
-if(tier===1){
-if(minK==='d1'){constraint='Supply constraint (Type A)';cSub='Facilities and open space are the primary deficit';intervention='Build — new public parks, rec centers, open space';iSub='Cannot solve with programming or outreach alone — physical infrastructure required';timeline='0 to 12 months';tSub='Immediate capital investment required';}
-else if(minK==='d3'&&d1>35){constraint='Delivery constraint (Type B)';cSub='Access exists but residents are not using it';intervention='Outreach — community engagement, trust-building, cultural programming';iSub='New facilities will sit empty without addressing the delivery problem first';timeline='0 to 18 months';tSub='Community organizing must precede programming';}
-else{constraint='Coverage constraint (Type C)';cSub='Programs exist but do not fit residents lives';intervention='Redesign — hours, language access, age-appropriate content';iSub='Programs likely exist but serve the wrong times, languages, or demographics';timeline='0 to 12 months';tSub='Program redesign is faster than construction — can show results quickly';}
-} else if(tier===2){
-if(d3<d1-10){constraint='Engagement gap (Type 1)';cSub='Infrastructure exists; participation underperforms';intervention='Activation — make existing programs more visible and accessible';iSub='Residents may not know what exists or face logistical barriers';timeline='6 to 18 months';tSub='Targeted engagement campaigns';}
-else if(d2<d1-10){constraint='Program alignment gap (Type 2)';cSub='Programs exist but do not match community needs';intervention='Redesign — community input on timing, format, content';iSub='Community needs assessment is the starting point';timeline='6 to 18 months';tSub='Co-design with residents before redesign';}
-else{constraint='Early risk signal (Type 3)';cSub='Performance appears adequate but trend is concerning';intervention='Preventive investment — strengthen weaker dimensions';iSub='Do not wait for Tier 1 — preventive action is far cheaper';timeline='12 to 24 months';tSub='Monitor quarterly; intervene before decline';}
-} else {
-if(minK==='d1'){constraint='Infrastructure-led strength (Type 1)';cSub='Strong facilities drive overall performance';}
-else if(minK==='d2'){constraint='Program ecosystem strength (Type 2)';cSub='Programming quality drives participation';}
-else{constraint='Participation culture strength (Type 3)';cSub='High community engagement drives outcomes';}
-intervention='Maintain and protect'; iSub='Document what works — replicate in lower-tier neighborhoods';
-timeline='Ongoing'; tSub='Quarterly monitoring; protect from decline';
+
+function constraintLabel(c){const m={supply:'Supply Constraint',delivery:'Delivery Constraint',coverage:'Coverage Constraint',burden:'Burden Constraint'};return m[c];}
+function constraintColors(c){
+  if(c==='supply')return{bg:'var(--tier1l)',color:'var(--tier1)'};
+  if(c==='delivery')return{bg:'var(--tier2l)',color:'var(--tier2)'};
+  if(c==='coverage')return{bg:'var(--d1l)',color:'var(--d1c)'};
+  return{bg:'var(--tier2l)',color:'var(--tier2)'};
 }
-return{comp,tier,minK,constraint,cSub,intervention,iSub,timeline,tSub};
+function dimBarColor(d){return['var(--d1c)','var(--d2c)','var(--d3c)','var(--d4c)'][d];}
+function dimTagClass(d){return['di-t1','di-t2','di-t3','di-t4'][d];}
+function dimLabel(d){return['Access to Facilities','Programming Coverage','Participation Rates','Disease Burden'][d];}
+function dimShort(d){return['D1','D2','D3','D4'][d];}
+
+let selectedHood=null;
+
+function buildHoodGrid(){
+  const grid=document.getElementById('hoodGrid');
+  grid.innerHTML=neighborhoods.map((n,i)=>{
+    const score=calcScore(n.d1,n.d2,n.d3,n.d4);
+    return`<button class="hood-btn" onclick="selectHood(${i})" id="hb${i}">
+      <div class="hb-name">${n.name}</div>
+      <div class="hb-boro">${n.boro}</div>
+      <div class="hb-score">MOI ${score}</div>
+    </button>`;
+  }).join('');
 }
-function chainDesc(key,val){
-if(key==='d1') return val<30?'Critically low — facilities and open space are the binding constraint. Nothing else can compensate.':val<50?'Below adequate — facility gaps are limiting what is possible.':val<70?'Moderate — some access exists but not equitably distributed.':'Strong — physical infrastructure is a genuine community asset.';
-if(key==='d2') return val<30?'Severely limited — even where space exists, programs are absent or inaccessible.':val<50?'Below average — programming volume and quality need investment.':val<70?'Moderate — programming exists but coverage is uneven.':'Strong — free programming is accessible and varied.';
-if(key==='d3') return val<30?'Very low — residents are not moving at healthy levels. Both supply and delivery have failed.':val<50?'Below average — participation rates suggest barriers beyond facility availability.':val<70?'Moderate — most residents are somewhat active but gaps remain.':'High — participation culture is strong and broad-based.';
-return val<30?'Severe — high chronic disease burden reflects long-term systemic failure.':val<50?'Elevated — chronic disease above citywide average. Prevention urgently needed.':val<70?'Moderate — chronic disease present but manageable with intervention.':'Low burden — strong health outcomes reflect cumulative benefit of movement opportunity.';
+
+function selectHood(i){
+  selectedHood=i;
+  document.querySelectorAll('.hood-btn').forEach((b,j)=>{b.classList.toggle('selected',j===i);});
+  const n=neighborhoods[i];
+  ['d1','d2','d3','d4'].forEach((d,j)=>{
+    const val=[n.d1,n.d2,n.d3,n.d4][j];
+    document.getElementById(d).value=val;
+    document.getElementById(d+'val').textContent=val;
+  });
 }
-function update(){
-var [d1,d2,d3,d4]=vals();
-['1','2','3','4'].forEach((i,idx)=>{
-document.getElementById('v'+i).textContent=[d1,d2,d3,d4][idx];
-});
-var diag=diagnose(d1,d2,d3,d4);
-var tc=diag.tier===1?'#A32D2D':diag.tier===2?'#854F0B':'#1a4a2e';
-var compEl=document.getElementById('comp');
-compEl.textContent=diag.comp; compEl.style.color=tc;
-var bar=document.getElementById('comp-bar');
-bar.style.width=diag.comp+'%'; bar.style.background=tc;
-var tierNames={1:'Tier 1 — Immediate intervention',2:'Tier 2 — Preventive and optimize',3:'Tier 3 — Maintain and monitor'};
-var tierSubs={1:'Score below 45. Urgent investment required within 12 months.',2:'Score 45 to 65. Preventive action needed to avoid decline.',3:'Score above 65. Protect and document what works.'};
-var t=document.getElementById('out-tier'); t.textContent=tierNames[diag.tier]; t.style.color=tc;
-document.getElementById('out-tier-sub').textContent=tierSubs[diag.tier];
-var con=document.getElementById('out-constraint'); con.textContent=diag.constraint; con.style.color=tc;
-document.getElementById('out-constraint-sub').textContent=diag.cSub;
-document.getElementById('out-intervention').textContent=diag.intervention;
-document.getElementById('out-int-sub').textContent=diag.iSub;
-document.getElementById('out-timeline').textContent=diag.timeline;
-document.getElementById('out-time-sub').textContent=diag.tSub;
-var dimBgs=['#EAF3DE','#E6F1FB','#FAEEDA','#FCEBEB'];
-var dimFgs=['#1a4a2e','#0C447C','#633806','#791F1F'];
-var dimKeys=['d1','d2','d3','d4'];
-var dimLabels=['D1 Access','D2 Programs','D3 Participation','D4 Health'];
-var dimVals=[d1,d2,d3,d4];
-var roleMap={d1:'root dimension',d2:'delivery mechanism',d3:'behavioral outcome',d4:'health consequence'};
-document.getElementById('chain').innerHTML=dimKeys.map((k,i)=>{
-var isPrimary=k===diag.minK;
-var role=isPrimary?'primary driver':roleMap[k];
-return `<div class="chain-row"><div class="chain-dim" style="background:${dimBgs[i]};color:${dimFgs[i]};font-weight:${isPrimary?'500':'400'}">${dimLabels[i]}: ${dimVals[i]}</div><div class="chain-arrow">to</div><div class="chain-text">${chainDesc(k,dimVals[i])}<span class="chain-role" style="background:${dimBgs[i]};color:${dimFgs[i]}">${role}</span></div></div>${i<3?'<div class="chain-connector"></div>':''}`
-}).join('');
-document.getElementById('source-box').innerHTML=`<strong>How to read this:</strong> The composite score (${diag.comp}) is the equal-weighted average of the four dimension scores. Constraint type is derived from the lowest-scoring dimension and overall tier. Load a real neighborhood preset to see how published data scores through the algorithm. All presets sourced from DOHMH CHP 2021 and NY4P Open Space Profiles 2021.`;
+
+function updateVal(id,val){
+  document.getElementById(id+'val').textContent=val;
+  selectedHood=null;
+  document.querySelectorAll('.hood-btn').forEach(b=>b.classList.remove('selected'));
 }
-update();
+
+function tierBadgeClass(t){return t===1?'tb-1':t===2?'tb-2':'tb-3';}
+function tierLabel(t){return t===1?'Tier 1 — Critical':t===2?'Tier 2 — Moderate':'Tier 3 — Stable';}
+function tierBorderColor(t){return t===1?'var(--tier1)':t===2?'var(--tier2)':'var(--tier3)';}
+
+function analyze(){
+  const d1=document.getElementById('d1').value;
+  const d2=document.getElementById('d2').value;
+  const d3=document.getElementById('d3').value;
+  const d4=document.getElementById('d4').value;
+  const score=calcScore(d1,d2,d3,d4);
+  const tier=getTier(score);
+  const constraint=getConstraint(d1,d2,d3,d4);
+  const cc=constraintColors(constraint);
+  const hoodName=selectedHood!==null?neighborhoods[selectedHood].name:'Custom Input';
+  const actionKey=tier===3?'t3_any':`t${tier}_${constraint}`;
+  const action=actions[actionKey]||actions['t2_coverage'];
+  const dims=[parseInt(d1),parseInt(d2),parseInt(d3),parseInt(d4)];
+
+  document.getElementById('resultHeader').innerHTML=`
+    <div class="rh-label">MOI Diagnosis</div>
+    <div class="rh-hood">${hoodName}</div>
+    <div class="rh-score-row"><span class="rh-score">${score}</span><span class="rh-of">/ 100</span></div>
+    <span class="tier-badge-lg ${tierBadgeClass(tier)}">${tierLabel(tier)}</span>`;
+
+  document.getElementById('resultDims').innerHTML=`
+    <div class="rd-title">Dimension Breakdown</div>
+    ${dims.map((v,i)=>`
+    <div class="rd-row">
+      <span class="rd-tag ${dimTagClass(i)}">${dimShort(i)}</span>
+      <span class="rd-label">${dimLabel(i)}</span>
+      <div class="rd-bar"><div class="rdb-fill" style="width:${v}%;background:${dimBarColor(i)}"></div></div>
+      <span class="rd-score">${v}</span>
+    </div>`).join('')}`;
+
+  document.getElementById('resultDiagnosis').innerHTML=`
+    <div class="rd-title">Primary Constraint Identified</div>
+    <div class="constraint-display" style="background:${cc.bg}">
+      <div class="cd-label" style="color:${cc.color};font-size:13px;font-weight:700;">${constraintLabel(constraint)}</div>
+    </div>
+    <p style="font-size:11px;color:var(--s5);line-height:1.7;">The lowest-scoring dimension is the primary driver of the MOI score gap. Addressing this constraint first produces the highest marginal improvement in overall movement equity for this neighborhood.</p>`;
+
+  document.getElementById('resultAction').innerHTML=`
+    <div class="ra-title">Recommended Action Class</div>
+    <div class="ra-heading">${action.heading}</div>
+    <p class="ra-body">${action.body}</p>
+    <span class="ra-timeline">${action.timeline}</span>`;
+
+  document.getElementById('results').classList.add('show');
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function reset(){
+  selectedHood=null;
+  ['d1','d2','d3','d4'].forEach(d=>{
+    document.getElementById(d).value=50;
+    document.getElementById(d+'val').textContent=50;
+  });
+  document.querySelectorAll('.hood-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('results').classList.remove('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+buildHoodGrid();
 </script>
 </body>
 </html>

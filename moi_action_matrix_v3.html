@@ -3,169 +3,239 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MOI Action Matrix — Real Data</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>MOI Action Matrix · Movement Opportunity Index</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-:root {
---green:#1a4a2e;--green-lt:#e8f0eb;--green-pale:#f3f7f4;
---orange:#c85a1a;--orange-lt:#fdf0e8;
---ink:#111a14;--ink-mid:#3a4a3e;--ink-lt:#6b7c70;
---rule:#d4ddd7;--bg:#f8faf8;--white:#ffffff;
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --n:#0A1628;--nm:#112240;--nb:#1E3A5F;
+  --t:#0D9488;--tl:#14B8A6;--tt:#F0FDF9;
+  --w:#fff;--ow:#F8FAFC;
+  --s2:#E2E8F0;--s4:#94A3B8;--s5:#64748B;--s7:#334155;--s9:#0F172A;
+  --gd:#F59E0B;
+  --tier1:#a32d2d;--tier1l:#fcebeb;
+  --tier2:#854f0b;--tier2l:#faeeda;
+  --tier3:#0F766E;--tier3l:#F0FDF9;
+  --supply:#a32d2d;--supplyl:#fcebeb;
+  --delivery:#854f0b;--deliveryl:#faeeda;
+  --coverage:#0c447c;--coveragel:#e6f1fb;
+  --burden:#854f0b;--burdenl:#faeeda;
+  --ff:'DM Sans',sans-serif;--fd:'DM Serif Display',serif;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);padding:1.5rem;}
-.header{background:var(--green);border-radius:10px;padding:1.2rem 1.5rem;margin-bottom:1.2rem;border-bottom:3px solid var(--orange);}
-.header h1{font-family:'DM Serif Display',serif;font-size:1.3rem;color:white;margin-bottom:4px;}
-.header p{font-size:0.8rem;color:rgba(255,255,255,0.7);line-height:1.5;}
-.disclaimer{font-size:0.75rem;color:#854f0b;background:#faeeda;border-radius:6px;padding:8px 12px;margin-bottom:1rem;border-left:3px solid #c85a1a;}
-.axis-labels{display:flex;margin-left:90px;margin-bottom:4px;gap:4px;}
-.axis-cell{flex:1;text-align:center;font-size:0.68rem;font-weight:500;color:var(--ink-lt);padding:4px 2px;text-transform:uppercase;letter-spacing:0.04em;line-height:1.4;}
-.matrix-wrap{display:flex;gap:0;}
-.y-labels{width:90px;display:flex;flex-direction:column;flex-shrink:0;}
-.y-cell{flex:1;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:0.68rem;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;text-align:right;min-height:110px;line-height:1.4;}
-.matrix-grid{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));gap:4px;}
-.cell{border-radius:8px;padding:10px;min-height:110px;cursor:pointer;transition:filter 0.15s;}
-.cell:hover{filter:brightness(0.96);}
-.cell-label{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;opacity:0.75;}
-.cell-tag{font-size:0.65rem;font-weight:500;margin-bottom:6px;opacity:0.7;}
-.chips{display:flex;flex-wrap:wrap;gap:3px;}
-.chip{font-size:0.65rem;font-weight:500;padding:2px 7px;border-radius:20px;background:rgba(255,255,255,0.5);cursor:pointer;white-space:nowrap;}
-.chip:hover{background:rgba(255,255,255,0.85);}
-.detail{background:var(--white);border:0.5px solid var(--rule);border-radius:10px;padding:14px 16px;margin-top:1rem;display:none;}
-.detail.show{display:block;}
-.dp-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
-.dp-name{font-size:1rem;font-weight:500;}
-.dp-boro{font-size:0.72rem;color:var(--ink-lt);}
-.dp-score{font-size:1.5rem;font-weight:500;}
-.dp-tier{font-size:0.65rem;font-weight:500;padding:2px 8px;border-radius:4px;}
-.dp-note{font-size:0.68rem;padding:3px 8px;border-radius:4px;background:#faeeda;color:#633806;display:inline-block;margin-top:4px;}
-.dp-dims{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0;}
-.dp-dim{border-radius:6px;padding:8px;}
-.dp-dim-lbl{font-size:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
-.dp-dim-score{font-size:1.1rem;font-weight:500;}
-.dp-text{font-size:0.78rem;color:var(--ink-lt);line-height:1.65;margin-bottom:6px;}
-.dp-text strong{color:var(--ink);font-weight:500;}
-.dp-source{font-size:0.68rem;color:var(--ink-lt);margin-top:8px;padding-top:8px;border-top:0.5px solid var(--rule);}
-.footer-note{font-size:0.68rem;color:var(--ink-lt);text-align:center;margin-top:1.2rem;padding-top:0.8rem;border-top:0.5px solid var(--rule);}
+body{font-family:var(--ff);background:var(--ow);color:var(--s9);}
+
+.nav{background:var(--n);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:#fff;letter-spacing:1px;}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:var(--t);}
+.nav-tag{font-size:10px;font-weight:500;color:var(--tl);background:rgba(13,148,136,.15);padding:3px 10px;border-radius:20px;}
+
+.hero{background:var(--n);padding:28px 24px 24px;border-bottom:1px solid var(--nb);}
+.hero-lbl{font-size:8px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--t);margin-bottom:8px;}
+.hero-title{font-family:var(--fd);font-size:clamp(18px,2.5vw,28px);color:#fff;font-weight:400;margin-bottom:8px;}
+.hero-sub{font-size:12px;color:var(--s4);line-height:1.7;max-width:640px;}
+
+.wrap{padding:20px 24px;}
+
+/* AXIS LABELS */
+.matrix-outer{position:relative;padding:0 0 0 80px;}
+.y-label{position:absolute;left:0;top:50%;transform:translateY(-50%) rotate(-90deg);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--s5);white-space:nowrap;}
+.x-labels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px;padding:0 0 0 0;}
+.xl{text-align:center;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--s5);}
+
+/* MATRIX GRID */
+.matrix{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:8px;}
+
+/* CELLS */
+.cell{background:var(--w);border:1px solid var(--s2);border-radius:8px;padding:14px;min-height:130px;display:flex;flex-direction:column;position:relative;}
+.cell-urgency{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:3px;width:fit-content;margin-bottom:8px;}
+.cu-t1{background:var(--tier1l);color:var(--tier1);}
+.cu-t2{background:var(--tier2l);color:var(--tier2);}
+.cu-t3{background:var(--tier3l);color:var(--tier3);}
+.cell-action{font-size:12px;font-weight:600;color:var(--s9);margin-bottom:5px;line-height:1.3;}
+.cell-desc{font-size:10px;color:var(--s5);line-height:1.6;flex:1;}
+.cell-hoods{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;}
+.hood-tag{font-size:9px;font-weight:500;padding:2px 7px;border-radius:3px;background:var(--n);color:var(--tl);}
+.cell-empty{background:var(--ow);border:1px dashed var(--s2);display:flex;align-items:center;justify-content:center;}
+.cell-empty-txt{font-size:10px;color:var(--s4);font-style:italic;}
+
+/* ROW LABELS */
+.matrix-with-labels{display:grid;grid-template-columns:60px 1fr;gap:8px;}
+.row-labels{display:grid;grid-template-rows:repeat(3,1fr);gap:8px;}
+.rl{display:flex;align-items:center;justify-content:flex-end;}
+.rl-badge{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:3px;writing-mode:horizontal-tb;text-align:right;}
+.rl-1{background:var(--tier1l);color:var(--tier1);}
+.rl-2{background:var(--tier2l);color:var(--tier2);}
+.rl-3{background:var(--tier3l);color:var(--tier3);}
+
+/* CONSTRAINT LEGEND */
+.c-legend{background:var(--w);border:1px solid var(--s2);border-radius:8px;padding:14px 16px;margin-top:16px;}
+.cl-title{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t);margin-bottom:10px;}
+.cl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.cl-item{display:flex;gap:8px;align-items:flex-start;}
+.cl-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;margin-top:2px;}
+.cl-text{font-size:10px;color:var(--s5);line-height:1.5;}
+.cl-text strong{color:var(--s9);}
+
+/* HOW TO READ */
+.how-to{background:var(--nm);border-radius:8px;padding:14px 16px;margin-top:12px;}
+.ht-title{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--tl);margin-bottom:8px;}
+.ht-body{font-size:10px;color:var(--s4);line-height:1.7;}
+
+.foot{background:var(--n);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.foot-copy{font-size:10px;color:var(--s4);}
+.foot-url{font-size:10px;color:var(--tl);font-weight:500;}
+.foot-note{font-size:9px;color:var(--s7);max-width:400px;line-height:1.5;}
 </style>
 </head>
 <body>
-<div class="header">
-<h1>MOI Action Matrix</h1>
-<p>Real data edition · Neighborhoods plotted by urgency tier (rows) and primary constraint type (columns) · Click any neighborhood to see full diagnosis · maillardhowellny.com/movementopportunityindex</p>
+
+<nav class="nav">
+  <div class="nav-logo"><div class="nav-dot"></div>MOVEMENT OPPORTUNITY INDEX</div>
+  <span class="nav-tag">Action Matrix · Phase 1</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-lbl">Live Tool — Phase 1</div>
+  <h1 class="hero-title">Action Matrix</h1>
+  <p class="hero-sub">Every neighborhood mapped across two axes: intervention urgency (MOI score tier) and primary constraint type. The cell a neighborhood lands in determines the type of response most likely to close its gap.</p>
 </div>
-<div class="disclaimer">Based on DOHMH CHP 2021, NY4P Open Space Profiles 2021, NYC Parks Capital Tracker. All scores pending Phase 2 full agency validation.</div>
-<div class="axis-labels">
-<div class="axis-cell">Supply constraint<br><span style="font-weight:400;font-size:0.6rem;text-transform:none">Facilities don't exist</span></div>
-<div class="axis-cell">Delivery constraint<br><span style="font-weight:400;font-size:0.6rem;text-transform:none">Facilities unused</span></div>
-<div class="axis-cell">Coverage constraint<br><span style="font-weight:400;font-size:0.6rem;text-transform:none">Programs don't fit</span></div>
+
+<div class="wrap">
+
+  <div class="how-to">
+    <div class="ht-title">How to read this matrix</div>
+    <p class="ht-body">The vertical axis shows intervention urgency — Tier 1 (most urgent) at top, Tier 3 (stable) at bottom. The horizontal axis shows the primary constraint driving the low score: Supply (lack of facilities), Delivery (facilities exist but programs don't run), or Coverage (programs run but residents don't participate, or disease burden dominates). The intersection tells you what kind of investment is needed.</p>
+  </div>
+
+  <div style="margin-top:16px;">
+    <!-- X-axis labels -->
+    <div style="display:grid;grid-template-columns:60px 1fr;gap:8px;margin-bottom:6px;">
+      <div></div>
+      <div class="x-labels">
+        <div class="xl" style="color:var(--supply);">Supply Constraint</div>
+        <div class="xl" style="color:var(--delivery);">Delivery Constraint</div>
+        <div class="xl" style="color:var(--coverage);">Coverage Constraint</div>
+      </div>
+    </div>
+
+    <div class="matrix-with-labels">
+      <!-- Row labels -->
+      <div class="row-labels">
+        <div class="rl"><span class="rl-badge rl-1">Tier 1<br>Critical</span></div>
+        <div class="rl"><span class="rl-badge rl-2">Tier 2<br>Moderate</span></div>
+        <div class="rl"><span class="rl-badge rl-3">Tier 3<br>Stable</span></div>
+      </div>
+
+      <!-- 3x3 Matrix -->
+      <div class="matrix">
+
+        <!-- Row 1: Tier 1 (Critical) -->
+        <div class="cell" style="border-top:3px solid var(--tier1);">
+          <span class="cell-urgency cu-t1">Critical · Supply</span>
+          <div class="cell-action">Emergency infrastructure investment</div>
+          <div class="cell-desc">Facilities are absent or closed. No programming can occur without physical infrastructure. Capital investment is the only path.</div>
+          <div class="cell-hoods">
+            <span class="hood-tag">Brownsville</span>
+            <span class="hood-tag">East New York</span>
+          </div>
+        </div>
+
+        <div class="cell" style="border-top:3px solid var(--tier1);">
+          <span class="cell-urgency cu-t1">Critical · Delivery</span>
+          <div class="cell-action">Emergency program activation</div>
+          <div class="cell-desc">Facilities exist but no programs run. Immediate activation of existing DYCD and Parks programming is the fastest lever.</div>
+          <div class="cell-hoods">
+            <span class="hood-tag">Hunts Point</span>
+          </div>
+        </div>
+
+        <div class="cell" style="border-top:3px solid var(--tier1);">
+          <span class="cell-urgency cu-t1">Critical · Coverage</span>
+          <div class="cell-action">Health-first intervention</div>
+          <div class="cell-desc">Disease burden is so elevated it suppresses participation capacity. Requires clinical and preventive health investment before movement programs can take hold.</div>
+          <div class="cell-hoods">
+            <span class="hood-tag">East Harlem</span>
+            <span class="hood-tag">Mott Haven</span>
+          </div>
+        </div>
+
+        <!-- Row 2: Tier 2 (Moderate) -->
+        <div class="cell" style="border-top:3px solid var(--tier2);">
+          <span class="cell-urgency cu-t2">Moderate · Supply</span>
+          <div class="cell-action">Targeted facility investment</div>
+          <div class="cell-desc">Access gaps exist but are not acute. Prioritize repair, reopening, and partnerships with schools and NYCHA facilities to expand access.</div>
+          <div class="cell-hoods">
+            <span class="hood-tag">South Jamaica</span>
+          </div>
+        </div>
+
+        <div class="cell" style="border-top:3px solid var(--tier2);">
+          <span class="cell-urgency cu-t2">Moderate · Delivery</span>
+          <div class="cell-action">Program expansion and activation</div>
+          <div class="cell-desc">Infrastructure is adequate. Focus on increasing program frequency, expanding hours, and partnering with community organizations to activate existing spaces.</div>
+          <div class="cell-hoods">
+            <span class="hood-tag">Crown Heights</span>
+          </div>
+        </div>
+
+        <div class="cell" style="border-top:3px solid var(--tier2);">
+          <span class="cell-urgency cu-t2">Moderate · Coverage</span>
+          <div class="cell-action">Outreach and participation strategy</div>
+          <div class="cell-desc">Programs run and facilities exist but residents are not participating. Invest in culturally relevant outreach, subsidized access, and trusted community messengers.</div>
+          <div class="cell-hoods">
+            <span class="hood-tag">Washington Heights</span>
+            <span class="hood-tag">Flatbush</span>
+            <span class="hood-tag">Jackson Heights</span>
+          </div>
+        </div>
+
+        <!-- Row 3: Tier 3 (Stable) -->
+        <div class="cell cell-empty">
+          <span class="cell-empty-txt">No Phase 1 neighborhoods in this cell</span>
+        </div>
+
+        <div class="cell cell-empty">
+          <span class="cell-empty-txt">No Phase 1 neighborhoods in this cell</span>
+        </div>
+
+        <div class="cell cell-empty">
+          <span class="cell-empty-txt">No Phase 1 neighborhoods in this cell</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Constraint legend -->
+  <div class="c-legend">
+    <div class="cl-title">Constraint Type Definitions</div>
+    <div class="cl-grid">
+      <div class="cl-item">
+        <div class="cl-dot" style="background:var(--supply)"></div>
+        <div class="cl-text"><strong>Supply Constraint:</strong> Insufficient facilities, parks, or open space. The primary barrier is physical infrastructure.</div>
+      </div>
+      <div class="cl-item">
+        <div class="cl-dot" style="background:var(--delivery)"></div>
+        <div class="cl-text"><strong>Delivery Constraint:</strong> Facilities exist but structured programs are not running or are severely underutilized.</div>
+      </div>
+      <div class="cl-item">
+        <div class="cl-dot" style="background:var(--coverage)"></div>
+        <div class="cl-text"><strong>Coverage Constraint:</strong> Programs and facilities are present but participation rates are low — often linked to cultural, financial, or awareness barriers.</div>
+      </div>
+      <div class="cl-item">
+        <div class="cl-dot" style="background:var(--burden)"></div>
+        <div class="cl-text"><strong>Burden Constraint:</strong> Chronic disease prevalence is so high it suppresses movement capacity. Requires health-first intervention before program investment can be effective.</div>
+      </div>
+    </div>
+  </div>
+
 </div>
-<div class="matrix-wrap">
-<div class="y-labels">
-<div class="y-cell" style="color:#A32D2D">Tier 1<br>Urgent</div>
-<div class="y-cell" style="color:#854F0B">Tier 2<br>Preventive</div>
-<div class="y-cell" style="color:#1a4a2e">Tier 3<br>Maintain</div>
-</div>
-<div class="matrix-grid" id="grid"></div>
-</div>
-<div class="detail" id="detail"></div>
-<div class="footer-note">© 2026 Maillard Howell · Movement Opportunity Index · maillardhowellny.com/movementopportunityindex · Phase 1 proof of concept</div>
-<script>
-var N=[
-{id:'south_bronx',name:'South Bronx',boro:'Bronx',composite:33,tier:1,col:'supply',d1:28,d2:36,d3:38,d4:22,note:null,
-causal:'D1 (28) is the primary deficit — critically low park acreage and limited rec center capacity. D4 (22) reflects decades of chronic underinvestment.',
-action:'<strong>Intervention:</strong> Build — new public facilities, park acreage, rec center capacity. Interim outdoor programming while construction occurs.',
-source:'NY4P BX1 2021: 0.7 ac/1k, 1 rec center. DOHMH: obesity 42%, diabetes 20%, LE 77.6 years.'},
-{id:'brownsville',name:'Brownsville',boro:'Brooklyn',composite:28,tier:1,col:'supply',d1:19,d2:30,d3:32,d4:20,note:null,
-causal:'D1 (19) is the lowest access score in the dataset — Brownsville Rec Center is fully closed for $160M reconstruction. D4 (20) reflects a 74-year life expectancy, one of the lowest in NYC.',
-action:'<strong>Intervention:</strong> Infrastructure rebuild in progress. Critical interim priority: activate outdoor parks and schoolyards for programming during the construction gap.',
-source:'NY4P Brownsville OSI. Rec Center CLOSED (NYC Parks Capital Tracker 2025). DOHMH: LE 74, obesity ~35%, diabetes ~18%.'},
-{id:'east_ny',name:'East New York',boro:'Brooklyn',composite:32,tier:1,col:'supply',d1:25,d2:34,d3:36,d4:25,note:null,
-causal:'D1 (25) reflects limited public parkland. Significant NYCHA open space exists but is underactivated. D4 (25) tracks high poverty (33%) and elevated chronic disease.',
-action:'<strong>Intervention:</strong> NYCHA open space activation is the fastest high-impact move. Expand DYCD after-school sites.',
-source:'NY4P BK5 2021. DOHMH: poverty 33%, elevated chronic disease consistent with South Brooklyn pattern.'},
-{id:'harlem',name:'Harlem',boro:'Manhattan',composite:37,tier:1,col:'supply',d1:24,d2:45,d3:40,d4:28,note:'Harlem composite score 37 places it in Tier 1. The private wellness ecosystem creates a false impression of adequate public movement opportunity — private studios do not substitute for public infrastructure.',
-causal:'D1 (24): Central Harlem has 0.3 ac/1k (least in Manhattan) and Hansborough Rec Center is fully closed. D4 (28): East Harlem has the highest diabetes rate in NYC at 20%.',
-action:'<strong>Intervention:</strong> Restore public rec center access. Expand publicly accessible parkland. Free programming during reconstruction gap. Do not conflate private studios with public access.',
-source:'NY4P OSI: Central Harlem 0.3 ac/1k. Hansborough CLOSED (NYC Parks 2025). DOHMH CHP 2021: diabetes 20% East Harlem, obesity 30%.'},
-{id:'washington_hts',name:'Washington Heights',boro:'Manhattan',composite:47,tier:2,col:'delivery',d1:49,d2:52,d3:46,d4:38,note:null,
-causal:'D1 (49) is moderate — Fort Tryon and Inwood Hill provide real access. D3 (46) lags D1 — gap between available facilities and actual participation signals a delivery constraint. High immigrant population creates trust and language barriers.',
-action:'<strong>Intervention:</strong> Language-accessible outreach. Culturally relevant programming. The infrastructure exists — connect it to the community.',
-source:'DOHMH: obesity ~22%, diabetes 10%+, ~50% not exercising regularly. Fort Tryon Park (67ac) + Inwood Hill Park.'},
-{id:'jamaica',name:'Jamaica',boro:'Queens',composite:43,tier:2,col:'coverage',d1:36,d2:42,d3:40,d4:35,note:null,
-causal:'D1 (36) is improving — $92M Roy Wilkins investment underway. D2 (42) reflects the current gap between coming infrastructure and existing programming. Coverage constraint: investment arriving but programs not yet designed for community needs.',
-action:'<strong>Intervention:</strong> Pre-build programming relationships before Roy Wilkins opens. Design programs with community input now so the facility opens with full utilization.',
-source:'NYC Parks: Roy Wilkins $92M rec center + $55M pool (2025). DOHMH: Queens CD12 below-avg chronic disease.'},
-{id:'sunset_park',name:'Sunset Park',boro:'Brooklyn',composite:49,tier:2,col:'coverage',d1:45,d2:54,d3:48,d4:42,note:null,
-causal:'D1 (45) and D2 (54) are reasonable — Sunset Park Rec Center with pool is operational. D3 (48) lags due to program-community fit. Large Latino and Chinese populations need culturally specific programming.',
-action:'<strong>Intervention:</strong> Bilingual instructors. Timing flexibility for working families. Sunset Park has the infrastructure — it needs program redesign.',
-source:'NY4P BK7. Sunset Park (24ac), Rec Center with pool operational. DOHMH: poverty ~30%.'},
-{id:'flushing',name:'Flushing',boro:'Queens',composite:60,tier:3,col:'supply',d1:61,d2:62,d3:58,d4:60,note:null,
-causal:'D1 (61) benefits from Flushing Meadows. D4 (60) reflects lower chronic disease burden. D3 (58) is the relatively weakest dimension — participation could be higher given the infrastructure.',
-action:'<strong>Intervention:</strong> Maintain. Protect Flushing Meadows access. Ensure recent immigrant communities are reached by programming.',
-source:'Flushing Meadows (897ac). Aquatics Center + Ice Rink operational. DOHMH: Queens CD7 below-avg chronic disease.'},
-{id:'upper_west',name:'Upper West Side',boro:'Manhattan',composite:85,tier:3,col:'supply',d1:98,d2:82,d3:78,d4:82,note:null,
-causal:'D1 (98) — Central Park (843ac) + Riverside Park (266ac). D4 (82) reflects obesity ~13% and diabetes ~6%, among the lowest in NYC. Strong across all four dimensions.',
-action:'<strong>Intervention:</strong> Maintain and document. Protect park resources. Study what makes this work — infrastructure scale is not universally replicable but the programming ecosystem model is.',
-source:'Central Park (843ac) + Riverside Park (266ac). DOHMH: obesity ~13%, diabetes ~6% — lowest in NYC.'},
-{id:'park_slope',name:'Park Slope',boro:'Brooklyn',composite:78,tier:3,col:'supply',d1:87,d2:78,d3:76,d4:80,note:null,
-causal:'D1 (87) — Prospect Park (585ac) is transformative. D4 (80) reflects obesity ~12% and life expectancy 80+. The gap with Brownsville (composite 28, same borough) represents a 6+ year life expectancy difference — the MOI\'s core equity argument.',
-action:'<strong>Intervention:</strong> Maintain. Prospect Park Alliance private-public model produced exceptional outcomes — study for replication.',
-source:'Prospect Park (585ac). LeFrak Center year-round. DOHMH/CBS: LE 80+, obesity ~12%.'},
-];
-var CELLS={
-'1-supply':{bg:'#FCEBEB',fg:'#791F1F',label:'Tier 1 — Supply',tag:'Build or restore'},
-'1-delivery':{bg:'#F7C1C1',fg:'#791F1F',label:'Tier 1 — Delivery',tag:'Outreach + trust'},
-'1-coverage':{bg:'#F09595',fg:'#791F1F',label:'Tier 1 — Coverage',tag:'Redesign programs'},
-'2-supply':{bg:'#FAEEDA',fg:'#633806',label:'Tier 2 — Supply',tag:'Expand access'},
-'2-delivery':{bg:'#FAC775',fg:'#633806',label:'Tier 2 — Delivery',tag:'Engagement'},
-'2-coverage':{bg:'#EF9F27',fg:'#412402',label:'Tier 2 — Coverage',tag:'Align programs'},
-'3-supply':{bg:'#EAF3DE',fg:'#1a4a2e',label:'Tier 3 — Supply',tag:'Protect'},
-'3-delivery':{bg:'#C0DD97',fg:'#173404',label:'Tier 3 — Delivery',tag:'Monitor'},
-'3-coverage':{bg:'#97C459',fg:'#173404',label:'Tier 3 — Coverage',tag:'Optimize'},
-};
-var selectedId=null;
-function renderGrid(){
-var g=document.getElementById('grid');
-g.innerHTML='';
-[1,2,3].forEach(tier=>{
-['supply','delivery','coverage'].forEach(col=>{
-var key=tier+'-'+col;
-var cfg=CELLS[key];
-var members=N.filter(n=>n.tier===tier&&n.col===col);
-var div=document.createElement('div');
-div.className='cell';
-div.style.background=cfg.bg;
-div.innerHTML=`<div class="cell-label" style="color:${cfg.fg}">${cfg.label}</div>
-<div class="cell-tag" style="color:${cfg.fg}">${cfg.tag}</div>
-<div class="chips">${members.map(n=>`<div class="chip" style="color:${cfg.fg}" onclick="event.stopPropagation();showDetail('${n.id}')">${n.name}</div>`).join('')||`<span style="font-size:0.6rem;opacity:0.4;color:${cfg.fg}">—</span>`}</div>`;
-g.appendChild(div);
-});
-});
-}
-function showDetail(id){
-var n=N.find(x=>x.id===id);
-if(!n)return;
-var d=document.getElementById('detail');
-if(selectedId===id){d.classList.remove('show');selectedId=null;return;}
-selectedId=id;
-var tc=n.tier===1?'#A32D2D':n.tier===2?'#854F0B':'#1a4a2e';
-var tbg=n.tier===1?'#FCEBEB':n.tier===2?'#FAEEDA':'#EAF3DE';
-var dimBgs=['#EAF3DE','#E6F1FB','#FAEEDA','#FCEBEB'];
-var dimFgs=['#1a4a2e','#0C447C','#633806','#791F1F'];
-var dimNames=['Access','Programs','Participation','Health'];
-d.innerHTML=`<div class="dp-top">
-<div style="flex:1"><div class="dp-name">${n.name}</div><div class="dp-boro">${n.boro}</div>${n.note?`<div class="dp-note">${n.note}</div>`:''}</div>
-<div style="text-align:right"><div class="dp-score" style="color:${tc}">${n.composite}</div><div class="dp-tier" style="background:${tbg};color:${tc}">Tier ${n.tier}</div></div>
-</div>
-<div class="dp-dims">${[n.d1,n.d2,n.d3,n.d4].map((v,i)=>`<div class="dp-dim" style="background:${dimBgs[i]}"><div class="dp-dim-lbl" style="color:${dimFgs[i]}">D${i+1}</div><div class="dp-dim-score" style="color:${dimFgs[i]}">${v}</div><div style="font-size:0.6rem;color:${dimFgs[i]}">${dimNames[i]}</div></div>`).join('')}</div>
-<div class="dp-text">${n.causal}</div>
-<div class="dp-text">${n.action}</div>
-<div class="dp-source"><strong>Sources:</strong> ${n.source}</div>`;
-d.classList.add('show');
-d.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-renderGrid();
-</script>
+
+<footer class="foot">
+  <span class="foot-copy">© 2026 Maillard Howell</span>
+  <span class="foot-url">movementopportunityindex.com</span>
+  <span class="foot-note">Phase 1 covers 10 priority NYC neighborhoods. Scores are research-informed estimates from publicly available data.</span>
+</footer>
+
 </body>
 </html>
