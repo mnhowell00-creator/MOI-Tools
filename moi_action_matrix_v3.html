@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MOI Action Matrix · Movement Opportunity Index</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<title>MOI Action Matrix v4 &middot; Movement Opportunity Index</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -13,13 +13,16 @@
   --w:#fff;--ow:#F8FAFC;
   --s2:#E2E8F0;--s4:#94A3B8;--s5:#64748B;--s7:#334155;--s9:#0F172A;
   --gd:#F59E0B;
-  --tier1:#a32d2d;--tier1l:#fcebeb;
-  --tier2:#854f0b;--tier2l:#faeeda;
-  --tier3:#0F766E;--tier3l:#F0FDF9;
-  --supply:#a32d2d;--supplyl:#fcebeb;
-  --delivery:#854f0b;--deliveryl:#faeeda;
-  --coverage:#0c447c;--coveragel:#e6f1fb;
-  --burden:#854f0b;--burdenl:#faeeda;
+
+  --tier1:#DC2626;--tier1l:#FEE2E2;
+  --tier2:#B45309;--tier2l:#FEF3C7;
+  --tier3:#047857;--tier3l:#D1FAE5;
+
+  --supply:#1D4ED8;--supplyl:#DBEAFE;
+  --delivery:#B45309;--deliveryl:#FEF3C7;
+  --coverage:#047857;--coveragel:#D1FAE5;
+  --burden:#B91C1C;--burdenl:#FEE2E2;
+
   --ff:'DM Sans',sans-serif;--fd:'DM Serif Display',serif;
 }
 body{font-family:var(--ff);background:var(--ow);color:var(--s9);}
@@ -27,215 +30,296 @@ body{font-family:var(--ff);background:var(--ow);color:var(--s9);}
 .nav{background:var(--n);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .nav-logo{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:#fff;letter-spacing:1px;}
 .nav-dot{width:7px;height:7px;border-radius:50%;background:var(--t);}
-.nav-tag{font-size:10px;font-weight:500;color:var(--tl);background:rgba(13,148,136,.15);padding:3px 10px;border-radius:20px;}
+.nav-tag{font-size:10px;font-weight:500;color:var(--tl);background:rgba(13,148,136,.15);padding:4px 12px;border-radius:20px;}
 
-.hero{background:var(--n);padding:28px 24px 24px;border-bottom:1px solid var(--nb);}
+.hero{background:var(--n);padding:28px 32px 28px;border-bottom:1px solid var(--nb);}
 .hero-lbl{font-size:8px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--t);margin-bottom:8px;}
-.hero-title{font-family:var(--fd);font-size:clamp(18px,2.5vw,28px);color:#fff;font-weight:400;margin-bottom:8px;}
-.hero-sub{font-size:12px;color:var(--s4);line-height:1.7;max-width:640px;}
+.hero-title{font-family:var(--fd);font-size:clamp(20px,2.6vw,30px);color:#fff;font-weight:400;margin-bottom:10px;}
+.hero-sub{font-size:12.5px;color:var(--s4);line-height:1.7;max-width:760px;}
 
-.wrap{padding:20px 24px;}
+.wrap{padding:28px 32px 40px;max-width:1320px;margin:0 auto;}
 
-/* AXIS LABELS */
-.matrix-outer{position:relative;padding:0 0 0 80px;}
-.y-label{position:absolute;left:0;top:50%;transform:translateY(-50%) rotate(-90deg);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--s5);white-space:nowrap;}
-.x-labels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px;padding:0 0 0 0;}
-.xl{text-align:center;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--s5);}
+/* ============ MATRIX ============ */
+.matrix-wrap{
+  display:grid;
+  grid-template-columns:88px repeat(4,1fr);
+  gap:10px;
+  margin-bottom:20px;
+}
+.corner{}
+.col-head{
+  padding:12px 14px;
+  text-align:center;
+  font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:#fff;
+  border-radius:8px;
+  align-self:stretch;
+  display:flex;align-items:center;justify-content:center;
+}
+.col-head.supply{background:var(--supply);}
+.col-head.delivery{background:var(--delivery);}
+.col-head.coverage{background:var(--coverage);}
+.col-head.burden{background:var(--burden);}
 
-/* MATRIX GRID */
-.matrix{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:8px;}
+.row-head{
+  display:flex;flex-direction:column;align-items:flex-end;justify-content:center;
+  padding:14px 10px;
+  border-radius:8px;
+  text-align:right;
+}
+.row-head.t1{background:var(--tier1l);border:1px solid var(--tier1);}
+.row-head.t2{background:var(--tier2l);border:1px solid var(--tier2);}
+.row-head.t3{background:var(--tier3l);border:1px solid var(--tier3);}
+.rh-name{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+.rh-name.t1{color:var(--tier1);}
+.rh-name.t2{color:var(--tier2);}
+.rh-name.t3{color:var(--tier3);}
+.rh-thresh{font-size:9px;color:var(--s5);margin-top:4px;letter-spacing:.04em;}
 
-/* CELLS */
-.cell{background:var(--w);border:1px solid var(--s2);border-radius:8px;padding:14px;min-height:130px;display:flex;flex-direction:column;position:relative;}
-.cell-urgency{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:3px;width:fit-content;margin-bottom:8px;}
+.cell{
+  background:var(--w);
+  border:1px solid var(--s2);
+  border-radius:8px;
+  padding:16px;
+  min-height:220px;
+  display:flex;flex-direction:column;
+  position:relative;
+  border-top-width:4px;
+}
+.cell.supply{border-top-color:var(--supply);}
+.cell.delivery{border-top-color:var(--delivery);}
+.cell.coverage{border-top-color:var(--coverage);}
+.cell.burden{border-top-color:var(--burden);}
+
+.cell-urgency{
+  font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 9px;border-radius:3px;width:fit-content;margin-bottom:10px;
+}
 .cu-t1{background:var(--tier1l);color:var(--tier1);}
 .cu-t2{background:var(--tier2l);color:var(--tier2);}
 .cu-t3{background:var(--tier3l);color:var(--tier3);}
-.cell-action{font-size:12px;font-weight:600;color:var(--s9);margin-bottom:5px;line-height:1.3;}
-.cell-desc{font-size:10px;color:var(--s5);line-height:1.6;flex:1;}
-.cell-hoods{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;}
-.hood-tag{font-size:9px;font-weight:500;padding:2px 7px;border-radius:3px;background:var(--n);color:var(--tl);}
-.cell-empty{background:var(--ow);border:1px dashed var(--s2);display:flex;align-items:center;justify-content:center;}
-.cell-empty-txt{font-size:10px;color:var(--s4);font-style:italic;}
 
-/* ROW LABELS */
-.matrix-with-labels{display:grid;grid-template-columns:60px 1fr;gap:8px;}
-.row-labels{display:grid;grid-template-rows:repeat(3,1fr);gap:8px;}
-.rl{display:flex;align-items:center;justify-content:flex-end;}
-.rl-badge{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:3px;writing-mode:horizontal-tb;text-align:right;}
-.rl-1{background:var(--tier1l);color:var(--tier1);}
-.rl-2{background:var(--tier2l);color:var(--tier2);}
-.rl-3{background:var(--tier3l);color:var(--tier3);}
+.cell-action{font-size:13px;font-weight:600;color:var(--s9);margin-bottom:8px;line-height:1.3;}
+.cell-desc{font-size:11px;color:var(--s5);line-height:1.65;flex:1;}
+.cell-timeline{
+  font-size:9px;font-weight:600;letter-spacing:.04em;
+  padding:4px 10px;border-radius:999px;
+  background:var(--ow);color:var(--s7);
+  width:fit-content;margin-top:10px;
+  border:1px solid var(--s2);
+}
+.cell-hoods{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px;}
+.hood-tag{
+  font-size:9px;font-weight:500;padding:3px 8px;border-radius:3px;
+  background:var(--n);color:var(--tl);
+}
+.cell-empty{
+  background:var(--ow);
+  border:1px dashed var(--s2);
+  border-top:1px dashed var(--s2);
+  display:flex;align-items:center;justify-content:center;min-height:220px;
+}
+.cell-empty-txt{font-size:10px;color:var(--s4);font-style:italic;text-align:center;padding:10px;}
 
-/* CONSTRAINT LEGEND */
-.c-legend{background:var(--w);border:1px solid var(--s2);border-radius:8px;padding:14px 16px;margin-top:16px;}
-.cl-title{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t);margin-bottom:10px;}
-.cl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
-.cl-item{display:flex;gap:8px;align-items:flex-start;}
-.cl-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;margin-top:2px;}
-.cl-text{font-size:10px;color:var(--s5);line-height:1.5;}
-.cl-text strong{color:var(--s9);}
+/* ============ LEGEND ============ */
+.legend{
+  background:var(--w);border:1px solid var(--s2);border-radius:10px;
+  padding:20px 24px;margin-top:20px;
+}
+.leg-title{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--t);margin-bottom:14px;}
+.leg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.leg-item{display:flex;gap:10px;align-items:flex-start;}
+.leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;margin-top:2px;}
+.leg-dot.supply{background:var(--supply);}
+.leg-dot.delivery{background:var(--delivery);}
+.leg-dot.coverage{background:var(--coverage);}
+.leg-dot.burden{background:var(--burden);}
+.leg-text{font-size:11px;color:var(--s5);line-height:1.55;}
+.leg-text strong{color:var(--s9);display:block;margin-bottom:3px;}
 
-/* HOW TO READ */
-.how-to{background:var(--nm);border-radius:8px;padding:14px 16px;margin-top:12px;}
-.ht-title{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--tl);margin-bottom:8px;}
-.ht-body{font-size:10px;color:var(--s4);line-height:1.7;}
+/* ============ HOW TO READ ============ */
+.howto{
+  background:var(--nm);border-radius:10px;padding:18px 22px;margin-top:16px;color:#fff;
+}
+.howto-title{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tl);margin-bottom:10px;}
+.howto-body{font-size:11.5px;color:var(--s4);line-height:1.7;}
+.howto-body strong{color:#fff;}
 
-.foot{background:var(--n);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.foot{background:var(--n);padding:18px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:24px;}
 .foot-copy{font-size:10px;color:var(--s4);}
 .foot-url{font-size:10px;color:var(--tl);font-weight:500;}
-.foot-note{font-size:9px;color:var(--s7);max-width:400px;line-height:1.5;}
+.foot-note{font-size:9px;color:var(--s7);max-width:420px;line-height:1.5;}
+
+@media (max-width:1100px){
+  .matrix-wrap{grid-template-columns:72px repeat(4,1fr);}
+  .leg-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:820px){
+  .matrix-wrap{grid-template-columns:1fr;}
+  .row-head{flex-direction:row;align-items:center;justify-content:space-between;text-align:left;}
+  .rh-thresh{margin-top:0;margin-left:10px;}
+  .corner{display:none;}
+  .col-head{display:none;}
+}
 </style>
 </head>
 <body>
 
 <nav class="nav">
   <div class="nav-logo"><div class="nav-dot"></div>MOVEMENT OPPORTUNITY INDEX</div>
-  <span class="nav-tag">Action Matrix · Phase 1</span>
+  <span class="nav-tag">Action Matrix v4 &middot; Phase 1</span>
 </nav>
 
 <div class="hero">
-  <div class="hero-lbl">Live Tool — Phase 1</div>
+  <div class="hero-lbl">Live Tool &middot; Phase 1</div>
   <h1 class="hero-title">Action Matrix</h1>
-  <p class="hero-sub">Every neighborhood mapped across two axes: intervention urgency (MOI score tier) and primary constraint type. The cell a neighborhood lands in determines the type of response most likely to close its gap.</p>
+  <p class="hero-sub">Twelve action classes formed by crossing three intervention tiers with four constraint types. Neighborhoods plot into one cell based on Decision Rule v1. The cell is the recommended action class and timeline. Phase 1 distribution of the ten priority NYC neighborhoods is shown in the cell chips.</p>
 </div>
 
 <div class="wrap">
 
-  <div class="how-to">
-    <div class="ht-title">How to read this matrix</div>
-    <p class="ht-body">The vertical axis shows intervention urgency — Tier 1 (most urgent) at top, Tier 3 (stable) at bottom. The horizontal axis shows the primary constraint driving the low score: Supply (lack of facilities), Delivery (facilities exist but programs don't run), or Coverage (programs run but residents don't participate, or disease burden dominates). The intersection tells you what kind of investment is needed.</p>
-  </div>
+  <div class="matrix-wrap" id="matrix"></div>
 
-  <div style="margin-top:16px;">
-    <!-- X-axis labels -->
-    <div style="display:grid;grid-template-columns:60px 1fr;gap:8px;margin-bottom:6px;">
-      <div></div>
-      <div class="x-labels">
-        <div class="xl" style="color:var(--supply);">Supply Constraint</div>
-        <div class="xl" style="color:var(--delivery);">Delivery Constraint</div>
-        <div class="xl" style="color:var(--coverage);">Coverage Constraint</div>
-      </div>
-    </div>
-
-    <div class="matrix-with-labels">
-      <!-- Row labels -->
-      <div class="row-labels">
-        <div class="rl"><span class="rl-badge rl-1">Tier 1<br>Critical</span></div>
-        <div class="rl"><span class="rl-badge rl-2">Tier 2<br>Moderate</span></div>
-        <div class="rl"><span class="rl-badge rl-3">Tier 3<br>Stable</span></div>
-      </div>
-
-      <!-- 3x3 Matrix -->
-      <div class="matrix">
-
-        <!-- Row 1: Tier 1 (Critical) -->
-        <div class="cell" style="border-top:3px solid var(--tier1);">
-          <span class="cell-urgency cu-t1">Critical · Supply</span>
-          <div class="cell-action">Emergency infrastructure investment</div>
-          <div class="cell-desc">Facilities are absent or closed. No programming can occur without physical infrastructure. Capital investment is the only path.</div>
-          <div class="cell-hoods">
-            <span class="hood-tag">Brownsville</span>
-            <span class="hood-tag">East New York</span>
-          </div>
-        </div>
-
-        <div class="cell" style="border-top:3px solid var(--tier1);">
-          <span class="cell-urgency cu-t1">Critical · Delivery</span>
-          <div class="cell-action">Emergency program activation</div>
-          <div class="cell-desc">Facilities exist but no programs run. Immediate activation of existing DYCD and Parks programming is the fastest lever.</div>
-          <div class="cell-hoods">
-            <span class="hood-tag">Hunts Point</span>
-          </div>
-        </div>
-
-        <div class="cell" style="border-top:3px solid var(--tier1);">
-          <span class="cell-urgency cu-t1">Critical · Coverage</span>
-          <div class="cell-action">Health-first intervention</div>
-          <div class="cell-desc">Disease burden is so elevated it suppresses participation capacity. Requires clinical and preventive health investment before movement programs can take hold.</div>
-          <div class="cell-hoods">
-            <span class="hood-tag">East Harlem</span>
-            <span class="hood-tag">Mott Haven</span>
-          </div>
-        </div>
-
-        <!-- Row 2: Tier 2 (Moderate) -->
-        <div class="cell" style="border-top:3px solid var(--tier2);">
-          <span class="cell-urgency cu-t2">Moderate · Supply</span>
-          <div class="cell-action">Targeted facility investment</div>
-          <div class="cell-desc">Access gaps exist but are not acute. Prioritize repair, reopening, and partnerships with schools and NYCHA facilities to expand access.</div>
-          <div class="cell-hoods">
-            <span class="hood-tag">South Jamaica</span>
-          </div>
-        </div>
-
-        <div class="cell" style="border-top:3px solid var(--tier2);">
-          <span class="cell-urgency cu-t2">Moderate · Delivery</span>
-          <div class="cell-action">Program expansion and activation</div>
-          <div class="cell-desc">Infrastructure is adequate. Focus on increasing program frequency, expanding hours, and partnering with community organizations to activate existing spaces.</div>
-          <div class="cell-hoods">
-            <span class="hood-tag">Crown Heights</span>
-          </div>
-        </div>
-
-        <div class="cell" style="border-top:3px solid var(--tier2);">
-          <span class="cell-urgency cu-t2">Moderate · Coverage</span>
-          <div class="cell-action">Outreach and participation strategy</div>
-          <div class="cell-desc">Programs run and facilities exist but residents are not participating. Invest in culturally relevant outreach, subsidized access, and trusted community messengers.</div>
-          <div class="cell-hoods">
-            <span class="hood-tag">Washington Heights</span>
-            <span class="hood-tag">Flatbush</span>
-            <span class="hood-tag">Jackson Heights</span>
-          </div>
-        </div>
-
-        <!-- Row 3: Tier 3 (Stable) -->
-        <div class="cell cell-empty">
-          <span class="cell-empty-txt">No Phase 1 neighborhoods in this cell</span>
-        </div>
-
-        <div class="cell cell-empty">
-          <span class="cell-empty-txt">No Phase 1 neighborhoods in this cell</span>
-        </div>
-
-        <div class="cell cell-empty">
-          <span class="cell-empty-txt">No Phase 1 neighborhoods in this cell</span>
-        </div>
-
-      </div>
+  <div class="legend">
+    <div class="leg-title">Constraint Types</div>
+    <div class="leg-grid">
+      <div class="leg-item"><div class="leg-dot supply"></div><div class="leg-text"><strong>Supply (D1)</strong>Facility and infrastructure gap. Parkland, recreation centers, schoolyard access.</div></div>
+      <div class="leg-item"><div class="leg-dot delivery"></div><div class="leg-text"><strong>Delivery (D2)</strong>Programming gap. Free hours, instructor capacity, active program count.</div></div>
+      <div class="leg-item"><div class="leg-dot coverage"></div><div class="leg-text"><strong>Coverage (D3)</strong>Participation gap. Enrollment rates across adults, youth, and seniors.</div></div>
+      <div class="leg-item"><div class="leg-dot burden"></div><div class="leg-text"><strong>Burden (D4)</strong>Disease burden severity. Triggers as primary constraint when D4 at or below 30.</div></div>
     </div>
   </div>
 
-  <!-- Constraint legend -->
-  <div class="c-legend">
-    <div class="cl-title">Constraint Type Definitions</div>
-    <div class="cl-grid">
-      <div class="cl-item">
-        <div class="cl-dot" style="background:var(--supply)"></div>
-        <div class="cl-text"><strong>Supply Constraint:</strong> Insufficient facilities, parks, or open space. The primary barrier is physical infrastructure.</div>
-      </div>
-      <div class="cl-item">
-        <div class="cl-dot" style="background:var(--delivery)"></div>
-        <div class="cl-text"><strong>Delivery Constraint:</strong> Facilities exist but structured programs are not running or are severely underutilized.</div>
-      </div>
-      <div class="cl-item">
-        <div class="cl-dot" style="background:var(--coverage)"></div>
-        <div class="cl-text"><strong>Coverage Constraint:</strong> Programs and facilities are present but participation rates are low — often linked to cultural, financial, or awareness barriers.</div>
-      </div>
-      <div class="cl-item">
-        <div class="cl-dot" style="background:var(--burden)"></div>
-        <div class="cl-text"><strong>Burden Constraint:</strong> Chronic disease prevalence is so high it suppresses movement capacity. Requires health-first intervention before program investment can be effective.</div>
-      </div>
-    </div>
+  <div class="howto">
+    <div class="howto-title">How to read this matrix</div>
+    <div class="howto-body">Each neighborhood occupies exactly one cell. <strong>Rows</strong> are intervention tiers driven by the MOI composite score. <strong>Columns</strong> are the primary constraint identified by Decision Rule v1. A Tier 1 Burden case requires a health-first intervention before any recreational programming. A Tier 2 Delivery case needs program expansion into facilities that already exist. The matrix surfaces the twelve distinct action classes so funders and policymakers can allocate resources by category rather than by neighborhood case-by-case.</div>
   </div>
 
 </div>
 
 <footer class="foot">
-  <span class="foot-copy">© 2026 Maillard Howell</span>
+  <span class="foot-copy">&copy; 2026 Black Roots Lab</span>
   <span class="foot-url">movementopportunityindex.com</span>
-  <span class="foot-note">Phase 1 covers 10 priority NYC neighborhoods. Scores are research-informed estimates from publicly available data.</span>
+  <span class="foot-note">Decision Rule v1 &middot; ENGINE_KEY_v2 &middot; Phase 1 research-informed estimates from publicly available data.</span>
 </footer>
 
+<script>
+// Canonical Phase 1 dataset
+const neighborhoods = [
+  {name:"Brownsville",         boro:"Brooklyn",  moi:18, tier:1, constraint:"burden"},
+  {name:"Hunts Point",         boro:"Bronx",     moi:25, tier:1, constraint:"burden"},
+  {name:"East New York",       boro:"Brooklyn",  moi:28, tier:1, constraint:"burden"},
+  {name:"Mott Haven",          boro:"Bronx",     moi:28, tier:1, constraint:"burden"},
+  {name:"East Harlem",         boro:"Manhattan", moi:44, tier:1, constraint:"delivery"},
+  {name:"South Jamaica",       boro:"Queens",    moi:45, tier:2, constraint:"delivery"},
+  {name:"Crown Heights",       boro:"Brooklyn",  moi:50, tier:2, constraint:"delivery"},
+  {name:"Jackson Heights",     boro:"Queens",    moi:57, tier:2, constraint:"supply"},
+  {name:"Flatbush",            boro:"Brooklyn",  moi:57, tier:2, constraint:"delivery"},
+  {name:"Washington Heights",  boro:"Manhattan", moi:60, tier:2, constraint:"delivery"}
+];
+
+// Action cell copy - 12 action classes
+const cells = {
+  "1_supply":{
+    heading:"Emergency infrastructure investment",
+    desc:"Facilities are absent or permanently closed. Programming is impossible without infrastructure. Priority is capital investment in parks, recreation centers, or school gymnasium partnerships.",
+    timeline:"12 to 36 month capital cycle"},
+  "1_delivery":{
+    heading:"Emergency program activation",
+    desc:"Facilities exist but no structured programs run. Immediate activation of DYCD and Parks programming. Deploy Shape Up NYC capacity, after-school movement programs, NYCHA community centers.",
+    timeline:"3 to 6 month activation"},
+  "1_coverage":{
+    heading:"Urgent outreach and enrollment push",
+    desc:"Infrastructure and programs present but participation at crisis levels. Deploy community ambassadors, faith partnerships, multilingual outreach, and subsidized access.",
+    timeline:"6 to 12 month engagement"},
+  "1_burden":{
+    heading:"Health-first intervention",
+    desc:"Chronic disease prevalence suppresses movement capacity. Clinical intervention precedes recreation. DOHMH and H+H partnership on cardiometabolic screening, diabetes prevention, metabolic health.",
+    timeline:"6 to 18 month multi-phase"},
+
+  "2_supply":{
+    heading:"Targeted facility investment",
+    desc:"Access gaps exist but are not acute. Prioritize repair, reopening, and public-private partnerships. Activate NYCHA campus spaces and DOE gyms for community use after hours.",
+    timeline:"6 to 18 month investment cycle"},
+  "2_delivery":{
+    heading:"Program expansion and activation",
+    desc:"Infrastructure is adequate. Focus on increasing program frequency, extending hours, and recruiting CBOs to run programming in existing spaces.",
+    timeline:"3 to 9 month activation"},
+  "2_coverage":{
+    heading:"Outreach and participation strategy",
+    desc:"Programs and facilities are present but residents are not participating. Culturally relevant outreach, subsidized access, trusted community messengers, faith partnerships.",
+    timeline:"6 to 12 month engagement"},
+  "2_burden":{
+    heading:"Preventive health partnership",
+    desc:"Disease burden elevated but not crisis level. DOHMH primary care network partnership on preventive screening, health coaching, and chronic disease management integrated with movement programming.",
+    timeline:"6 to 12 month integration"},
+
+  "3_supply":{
+    heading:"Infrastructure maintenance and capital planning",
+    desc:"Facility conditions are stable. Focus on preventive maintenance, scheduled capital refresh, and planning for population growth. Monitor for early warning signs.",
+    timeline:"Ongoing monitoring"},
+  "3_delivery":{
+    heading:"Programming quality sustainment",
+    desc:"Program offerings are adequate. Sustain quality, refresh content, and mentor neighboring communities. This neighborhood can model peer learning.",
+    timeline:"Ongoing monitoring"},
+  "3_coverage":{
+    heading:"Participation monitoring and retention",
+    desc:"Participation rates are healthy. Focus on retention, preventing backslide, and sharing successful engagement practices with lower-tier neighborhoods.",
+    timeline:"Ongoing monitoring"},
+  "3_burden":{
+    heading:"Chronic disease prevention maintenance",
+    desc:"Disease burden within acceptable range. Sustain preventive screening, wellness programming, and partnership with local health providers.",
+    timeline:"Ongoing monitoring"}
+};
+
+const constraints = ['supply','delivery','coverage','burden'];
+const tiers = [1,2,3];
+const tierMeta = {
+  1:{name:"Tier 1 Critical",   thresh:"MOI < 45",  tag:"cu-t1", row:"t1"},
+  2:{name:"Tier 2 Moderate",   thresh:"MOI 45-65", tag:"cu-t2", row:"t2"},
+  3:{name:"Tier 3 Stable",     thresh:"MOI > 65",  tag:"cu-t3", row:"t3"}
+};
+
+function buildMatrix(){
+  const wrap = document.getElementById('matrix');
+  const parts = [];
+
+  // Top row: corner + 4 column heads
+  parts.push(`<div class="corner"></div>`);
+  constraints.forEach(c => {
+    parts.push(`<div class="col-head ${c}">${c}</div>`);
+  });
+
+  // 3 tier rows
+  tiers.forEach(t => {
+    const tm = tierMeta[t];
+    parts.push(`<div class="row-head ${tm.row}">
+      <div class="rh-name ${tm.row}">Tier ${t}</div>
+      <div class="rh-thresh">${tm.thresh}</div>
+    </div>`);
+
+    constraints.forEach(c => {
+      const key = `${t}_${c}`;
+      const cell = cells[key];
+      const hoodList = neighborhoods.filter(n => n.tier === t && n.constraint === c);
+      const hoodChips = hoodList.length
+        ? `<div class="cell-hoods">${hoodList.map(n => `<span class="hood-tag">${n.name}</span>`).join('')}</div>`
+        : '';
+
+      parts.push(`<div class="cell ${c}">
+        <div class="cell-urgency ${tm.tag}">Tier ${t}</div>
+        <div class="cell-action">${cell.heading}</div>
+        <div class="cell-desc">${cell.desc}</div>
+        <div class="cell-timeline">${cell.timeline}</div>
+        ${hoodChips}
+      </div>`);
+    });
+  });
+
+  wrap.innerHTML = parts.join('');
+}
+
+buildMatrix();
+</script>
 </body>
 </html>

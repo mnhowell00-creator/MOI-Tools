@@ -3,28 +3,147 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MOI Explorer — Chat</title>
+<title>AI Explorer | Movement Opportunity Index</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  font-family: 'DM Sans', sans-serif;
-}
+:root{--navy:#0A1628;--navy-mid:#112240;--navy-border:#1E3A5F;--teal:#0D9488;--teal-light:#14B8A6;--white:#FFFFFF;--off-white:#F8FAFC;--slate-200:#E2E8F0;--slate-400:#94A3B8;--slate-500:#64748B;--slate-700:#334155;--slate-900:#0F172A;--gold:#F59E0B;--red:#a32d2d;--red-lt:#fcebeb;--amber:#854f0b;--amber-lt:#faeeda;--blue:#0c447c;--blue-lt:#e6f1fb;--font-display:'DM Serif Display',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font-body);font-size:16px;color:var(--slate-900);background:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased;}
+a{text-decoration:none;color:inherit;}
+nav{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:1px solid var(--slate-200);padding:0 2rem;}
+.nav-inner{max-width:1000px;margin:0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--navy);letter-spacing:0.5px;}
+.nav-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);}
+.nav-links{display:flex;gap:24px;list-style:none;align-items:center;}
+.nav-links a{font-size:13px;color:var(--slate-500);}
+.nav-links a.active{color:var(--teal);font-weight:500;}
+.nav-cta{color:var(--teal)!important;border:1px solid var(--teal);padding:6px 16px;border-radius:4px;}
+.explorer-beta{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;background:rgba(13,148,136,0.12);color:var(--teal);border:1px solid rgba(13,148,136,0.25);letter-spacing:0.5px;text-transform:uppercase;margin-left:5px;vertical-align:middle;}
+.beta-bar{background:var(--navy-mid);border-bottom:1px solid var(--navy-border);padding:10px 2rem;text-align:center;}
+.beta-bar-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:10px;}
+.beta-pill{font-size:9px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(245,158,11,0.15);color:var(--gold);border:1px solid rgba(245,158,11,0.3);letter-spacing:1px;text-transform:uppercase;flex-shrink:0;}
+.beta-bar p{font-size:12px;color:var(--slate-400);}
+.beta-bar strong{color:var(--teal-light);}
+.hero{background:var(--navy);padding:72px 2rem 64px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;right:-60px;top:-60px;width:400px;height:400px;border-radius:50%;background:var(--teal);opacity:0.04;}
+.hero-inner{max-width:1000px;margin:0 auto;position:relative;z-index:1;}
+.hero-eyebrow{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:20px;}
+.hero-eyebrow span{color:var(--teal-light);}
+.hero h1{font-family:var(--font-display);font-size:clamp(30px,4.5vw,52px);font-weight:400;color:var(--white);line-height:1.15;margin-bottom:20px;max-width:700px;}
+.hero h1 em{font-style:italic;color:var(--teal-light);}
+.hero-lead{font-size:16px;font-weight:300;color:var(--slate-400);max-width:580px;line-height:1.75;margin-bottom:32px;}
+.capability-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.cap-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:7px 14px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid var(--navy-border);color:var(--slate-400);}
+.cap-pill-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+.explorer-section{background:var(--navy);padding:0 2rem 64px;}
+.explorer-inner{max-width:1000px;margin:0 auto;}
+.explorer-frame{border:1px solid var(--navy-border);border-radius:12px;overflow:hidden;}
+.explorer-frame-header{background:var(--navy);border-bottom:1px solid var(--navy-border);padding:12px 20px;display:flex;align-items:center;gap:8px;}
+.frame-dot{width:10px;height:10px;border-radius:50%;}
+.fd-red{background:#ff5f57;}.fd-yellow{background:#febc2e;}.fd-green{background:#28c840;}
+.frame-url{font-size:11px;color:var(--slate-400);margin-left:8px;font-family:monospace;}
+.explorer-embed{width:100%;height:600px;border:none;display:block;}
+.audience-section{padding:72px 2rem;background:var(--white);}
+.audience-inner{max-width:1000px;margin:0 auto;}
+.section-label{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+h2{font-family:var(--font-display);font-size:clamp(22px,3vw,34px);font-weight:400;color:var(--slate-900);line-height:1.25;margin-bottom:16px;}
+.audience-intro{font-size:15px;color:var(--slate-500);max-width:600px;line-height:1.8;margin-bottom:40px;}
+.audience-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.audience-card{background:var(--off-white);border:1px solid var(--slate-200);border-radius:10px;padding:24px;transition:border-color 0.2s;}
+.audience-card:hover{border-color:var(--teal);}
+.ac-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px;}
+.ac-icon-1{background:var(--blue-lt);}.ac-icon-2{background:#F0FDF9;}.ac-icon-3{background:var(--amber-lt);}.ac-icon-4{background:var(--red-lt);}.ac-icon-5{background:var(--navy-mid);}.ac-icon-6{background:#F0FDF9;}
+.audience-card h3{font-family:var(--font-display);font-size:16px;font-weight:400;color:var(--navy);margin-bottom:8px;}
+.audience-card p{font-size:13px;color:var(--slate-500);line-height:1.7;}
+.queries-section{padding:72px 2rem;background:var(--navy);}
+.queries-section .section-label{color:var(--teal);}
+.queries-section h2{color:var(--white);margin-bottom:40px;}
+.query-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.query-card{background:var(--navy-mid);border:1px solid var(--navy-border);border-radius:8px;padding:16px 18px;display:flex;gap:12px;align-items:flex-start;}
+.qc-icon{font-size:14px;flex-shrink:0;margin-top:2px;}
+.qc-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);margin-bottom:5px;}
+.qc-text{font-size:13px;color:var(--slate-400);line-height:1.6;font-style:italic;}
+.phase-section{padding:56px 2rem;background:var(--off-white);border-top:1px solid var(--slate-200);border-bottom:1px solid var(--slate-200);}
+.phase-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap;}
+.phase-left{max-width:480px;}
+.phase-left h3{font-family:var(--font-display);font-size:22px;color:var(--navy);margin-bottom:10px;font-weight:400;}
+.phase-left p{font-size:14px;color:var(--slate-500);line-height:1.75;}
+.phase-right{display:flex;flex-direction:column;gap:10px;min-width:260px;}
+.phase-status-item{display:flex;align-items:center;gap:12px;background:var(--white);border:1px solid var(--slate-200);border-radius:8px;padding:12px 16px;}
+.psi-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.psi-dot-done{background:var(--teal);}.psi-dot-pending{background:var(--gold);}.psi-dot-future{background:var(--slate-200);}
+.psi-label{font-size:11px;font-weight:600;color:var(--slate-500);}
+.psi-desc{font-size:12px;color:var(--slate-400);margin-left:auto;}
+.cta-section{padding:72px 2rem;background:var(--navy-mid);}
+.cta-inner{max-width:600px;margin:0 auto;text-align:center;}
+.cta-inner .section-label{display:inline-block;margin-bottom:16px;}
+.cta-inner h2{color:var(--white);margin-bottom:14px;}
+.cta-inner p{font-size:15px;color:var(--slate-400);line-height:1.75;margin-bottom:32px;}
+.cta-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{display:inline-block;background:var(--teal);color:var(--white);font-size:14px;font-weight:500;padding:14px 28px;border-radius:4px;}
+.btn-secondary{display:inline-block;background:transparent;color:var(--teal-light);font-size:14px;font-weight:500;padding:14px 28px;border-radius:4px;border:1px solid var(--navy-border);}
+footer{background:var(--off-white);border-top:1px solid var(--slate-200);padding:20px 2rem;}
+footer p{max-width:1000px;margin:0 auto;font-size:12px;color:var(--slate-400);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+footer a{color:var(--teal);}
+@media(max-width:768px){.audience-grid{grid-template-columns:1fr;}.query-grid{grid-template-columns:1fr;}.phase-inner{flex-direction:column;}.nav-links{display:none;}.explorer-embed{height:480px;}}
 </style>
 </head>
 <body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo"><div class="nav-logo-dot"></div>MOVEMENT OPPORTUNITY INDEX</div>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/framework">Framework</a></li>
+      <li><a href="/methodology">Methodology</a></li>
+      <li><a href="/explorer" class="active">Explorer <span class="explorer-beta">Beta</span></a></li>
+      <li><a href="#contact" class="nav-cta">Get in Touch</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="beta-bar">
+  <div class="beta-bar-inner">
+    <span class="beta-pill">Beta</span>
+    <p>This is a <strong>pattern-matching demo</strong> running on the Phase 1 dataset. The live AI-connected version is in development. <strong>Scores are research-informed estimates, not validated agency outputs.</strong></p>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Movement Opportunity Index &nbsp;/&nbsp; <span>AI Explorer</span></div>
+    <h1>Ask the data.<br><em>Get an answer.</em></h1>
+    <p class="hero-lead">Query neighborhood scores, compare communities, understand constraint types, and get intervention recommendations in plain language. No dashboard required.</p>
+    <div class="capability-pills">
+      <div class="cap-pill"><div class="cap-pill-dot"></div>Score any Phase 1 neighborhood</div>
+      <div class="cap-pill"><div class="cap-pill-dot"></div>Compare two neighborhoods side by side</div>
+      <div class="cap-pill"><div class="cap-pill-dot"></div>Filter by constraint type</div>
+      <div class="cap-pill"><div class="cap-pill-dot"></div>Get intervention recommendations</div>
+      <div class="cap-pill"><div class="cap-pill-dot"></div>Identify the highest-leverage dimension</div>
+    </div>
+  </div>
+</div>
+
+<div class="explorer-section">
+  <div class="explorer-inner">
+    <div class="explorer-frame">
+      <div class="explorer-frame-header">
+        <div class="frame-dot fd-red"></div>
+        <div class="frame-dot fd-yellow"></div>
+        <div class="frame-dot fd-green"></div>
+        <span class="frame-url">movementopportunityindex.com/explorer</span>
+      </div>
+
 <div class="explorer-embed-shell">
 <style>
 .explorer-embed-shell {
   font-family: 'DM Sans', sans-serif;
   background: #0A1628;
-  border-radius: 0;
+  border-radius: 0 0 10px 10px;
   overflow: hidden;
-  height: 100vh;
-  min-height: 560px;
+  height: 600px;
   display: flex;
   flex-direction: column;
 }
@@ -50,7 +169,7 @@ nav{background:var(--n);border-bottom:1px solid var(--nb);padding:0 24px;height:
 .nav-badge{font-size:9px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(13,148,136,.15);color:var(--tl);border:1px solid rgba(20,184,166,.2);}
 
 /* LAYOUT */
-.main{display:flex;flex:1;height:calc(100vh - 52px);min-height:calc(560px - 52px);overflow:hidden;}
+.main{display:flex;flex:1;height:calc(600px - 52px);overflow:hidden;}
 
 /* SIDEBAR */
 .sidebar{width:260px;background:var(--nm);border-right:1px solid var(--nb);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
@@ -162,7 +281,7 @@ nav{background:var(--n);border-bottom:1px solid var(--nb);padding:0 24px;height:
       <div class="sb-hood active" onclick="selectHood('Brownsville')">
         <div class="sh-name">Brownsville</div>
         <div class="sh-boro">Brooklyn</div>
-        <div class="sh-score sh-s1">MOI 17 · Tier 1</div>
+        <div class="sh-score sh-s1">MOI 18 · Tier 1</div>
       </div>
       <div class="sb-hood" onclick="selectHood('East New York')">
         <div class="sh-name">East New York</div>
@@ -187,12 +306,12 @@ nav{background:var(--n);border-bottom:1px solid var(--nb);padding:0 24px;height:
       <div class="sb-hood" onclick="selectHood('South Jamaica')">
         <div class="sh-name">South Jamaica</div>
         <div class="sh-boro">Queens</div>
-        <div class="sh-score sh-s2">MOI 44 · Tier 2</div>
+        <div class="sh-score sh-s2">MOI 45 · Tier 2</div>
       </div>
       <div class="sb-hood" onclick="selectHood('Crown Heights')">
         <div class="sh-name">Crown Heights</div>
         <div class="sh-boro">Brooklyn</div>
-        <div class="sh-score sh-s2">MOI 49 · Tier 2</div>
+        <div class="sh-score sh-s2">MOI 50 · Tier 2</div>
       </div>
       <div class="sb-hood" onclick="selectHood('Washington Heights')">
         <div class="sh-name">Washington Heights</div>
@@ -256,16 +375,16 @@ nav{background:var(--n);border-bottom:1px solid var(--nb);padding:0 24px;height:
 
 <script>
 const neighborhoods = {
-  'Brownsville':        {boro:'Brooklyn',  score:17,tier:1,d1:11,d2:14,d3:21,d4:24,constraint:'supply',   rx:'Emergency infrastructure investment. The main rec center is closed. Capital investment is the only path forward. Timeline: 12 to 36 months for reconstruction.'},
-  'East New York':      {boro:'Brooklyn',  score:28,tier:1,d1:33,d2:22,d3:28,d4:29,constraint:'supply',   rx:'Facility investment and park access expansion. Limited open space per capita is the primary driver. Timeline: 12 to 24 months.'},
-  'Hunts Point':        {boro:'Bronx',     score:25,tier:1,d1:24,d2:23,d3:33,d4:18,constraint:'burden',   rx:'Health-first intervention required before programming can take hold. Clinical partnerships with H+H and DOHMH on cardiometabolic screening. Timeline: 6 to 18 months multi-phase.'},
-  'Mott Haven':         {boro:'Bronx',     score:28,tier:1,d1:30,d2:27,d3:38,d4:16,constraint:'burden',   rx:'Disease burden suppresses capacity for all other interventions. Diabetes prevention and obesity reduction programming must precede recreational investment. Timeline: 6 to 18 months.'},
-  'East Harlem':        {boro:'Manhattan', score:44,tier:1,d1:59,d2:36,d3:43,d4:37,constraint:'burden',   rx:'20% adult diabetes rate is the defining constraint. DOHMH partnership on preventive health is the lever. Movement programming can run in parallel but cannot lead. Timeline: 12 to 18 months.'},
-  'South Jamaica':      {boro:'Queens',    score:44,tier:2,d1:51,d2:38,d3:50,d4:39,constraint:'delivery', rx:'Facilities exist but programs are not activating. Prioritize DYCD partnership to increase program frequency and community outreach to reduce participation barriers. Timeline: 3 to 9 months.'},
-  'Crown Heights':      {boro:'Brooklyn',  score:49,tier:2,d1:49,d2:44,d3:54,d4:51,constraint:'delivery', rx:'Above-average facilities but programming coverage is the gap. Activate existing spaces with structured free programming. Culturally relevant programming is key given the diverse population. Timeline: 3 to 6 months.'},
-  'Washington Heights': {boro:'Manhattan', score:60,tier:2,d1:73,d2:48,d3:65,d4:55,constraint:'coverage', rx:'Infrastructure and programming are adequate. Participation rates lag. A culturally relevant outreach campaign and subsidized access program would close the gap. Timeline: 6 to 12 months.'},
-  'Flatbush':           {boro:'Brooklyn',  score:57,tier:2,d1:53,d2:52,d3:70,d4:54,constraint:'coverage', rx:'Moderate scores across all dimensions. Coverage constraint. Existing programs are not reaching all residents. Community ambassador program and faith institution partnerships recommended. Timeline: 6 to 12 months.'},
-  'Jackson Heights':    {boro:'Queens',    score:57,tier:2,d1:45,d2:45,d3:71,d4:66,constraint:'coverage', rx:'Strongest participation rates in Tier 2 cohort. The remaining gap is coverage. Ensure programs are multilingual and accessible across the diverse immigrant community. Timeline: 3 to 6 months.'},
+  'Brownsville':        {boro:'Brooklyn',  score:18,tier:1,d1:11,d2:14,d3:21,d4:24,constraint:'burden',   rx:'Disease burden is the gating factor. D4 at 24 triggers the severity override. Clinical partnerships with H+H and DOHMH on cardiometabolic screening must precede any facility or programming spend. Timeline: 6 to 18 months multi phase.'},
+  'East New York':      {boro:'Brooklyn',  score:28,tier:1,d1:33,d2:22,d3:28,d4:29,constraint:'burden',   rx:'Chronic disease prevalence is the defining constraint. D4 at 29 triggers the severity override. Health first intervention with DOHMH on preventive care is the lead lever before recreational capital flows. Timeline: 6 to 18 months.'},
+  'Hunts Point':        {boro:'Bronx',     score:25,tier:1,d1:24,d2:23,d3:33,d4:18,constraint:'burden',   rx:'Disease burden at 18 is the lowest in the Phase 1 set. Clinical partnerships with H+H and DOHMH on cardiometabolic screening are the lead. Movement programming can run in parallel once risk load is addressed. Timeline: 6 to 18 months multi phase.'},
+  'Mott Haven':         {boro:'Bronx',     score:28,tier:1,d1:30,d2:27,d3:38,d4:16,constraint:'burden',   rx:'Disease burden at 16 is the most severe in the Phase 1 set. Diabetes prevention and obesity reduction programming must precede recreational investment. Facility and programming gains cannot take hold until risk load drops. Timeline: 6 to 18 months.'},
+  'East Harlem':        {boro:'Manhattan', score:44,tier:1,d1:59,d2:36,d3:43,d4:37,constraint:'delivery', rx:'Facilities are adequate at 59 but programming is the bottleneck at 36. D4 at 37 registers but does not trigger the severity override. DYCD partnership to run structured free programming in existing sites is the lever. DOHMH preventive work should run in parallel. Timeline: 3 to 9 months.'},
+  'South Jamaica':      {boro:'Queens',    score:45,tier:2,d1:51,d2:38,d3:50,d4:39,constraint:'delivery', rx:'Facilities exist but programming is delivering at 38. Prioritize DYCD partnership to increase program frequency and community outreach to reduce access barriers. Timeline: 3 to 9 months.'},
+  'Crown Heights':      {boro:'Brooklyn',  score:50,tier:2,d1:49,d2:44,d3:54,d4:51,constraint:'delivery', rx:'Above average facilities but programming coverage is the gap at 44. Activate existing spaces with structured free programming. Culturally relevant offerings are key given the diverse population. Timeline: 3 to 6 months.'},
+  'Washington Heights': {boro:'Manhattan', score:60,tier:2,d1:73,d2:48,d3:65,d4:55,constraint:'delivery', rx:'Strong facilities at 73 and adequate participation at 65, but programming is the lowest dimension at 48. Activate existing spaces with structured free programming. Culturally relevant offerings for the Dominican community are essential. Timeline: 3 to 9 months.'},
+  'Flatbush':           {boro:'Brooklyn',  score:57,tier:2,d1:53,d2:52,d3:70,d4:54,constraint:'delivery', rx:'Moderate across the board with programming at 52 as the lowest dimension. Activate existing facilities with structured free programs. Faith institution partnerships provide distribution into the community. Timeline: 3 to 9 months.'},
+  'Jackson Heights':    {boro:'Queens',    score:57,tier:2,d1:45,d2:45,d3:71,d4:66,constraint:'supply',   rx:'Strongest participation rates in the Tier 2 cohort at 71 and disease burden is manageable at 66. Facility access at 45 and programming at 45 are tied, and upstream first points to facility investment. Open space expansion and shared use agreements with schools are the lever. Timeline: 12 to 18 months.'},
 };
 
 const dimColors = {d1:'var(--b)',d2:'var(--a)',d3:'var(--t)',d4:'var(--r)'};
@@ -393,7 +512,7 @@ ${matches.map(([name,n]) => `<div class="data-card" style="margin:6px 0;padding:
   constraintMatch==='supply'?'the physical infrastructure is absent or closed. Capital investment is required before any programming can succeed.' :
   constraintMatch==='delivery'?'facilities exist but structured programs are not running. The fix is activation, not construction.' :
   constraintMatch==='coverage'?'programs and facilities exist but residents are not participating. Outreach, cultural relevance, and access are the levers.' :
-  'chronic disease burden is so high it suppresses capacity for movement. Health-first intervention must precede recreational programming.'
+  'chronic disease burden is so high it suppresses capacity for movement. Health first intervention must precede recreational programming.'
 }`;
   }
 
@@ -488,5 +607,95 @@ function autoResize(el) {
 
 
 </div>
-</body>
-</html>
+
+    </div>
+  </div>
+</div>
+
+<div class="audience-section">
+  <div class="audience-inner">
+    <div class="section-label">Who this is for</div>
+    <h2>Built for people who need answers, not spreadsheets.</h2>
+    <p class="audience-intro">The MOI Explorer is designed for anyone working on movement equity in New York City who needs fast, specific answers from the data without opening a dashboard.</p>
+    <div class="audience-grid">
+      <div class="audience-card">
+        <div class="ac-icon ac-icon-1">🏛️</div>
+        <h3>Policymakers and agency staff</h3>
+        <p>Query scores, compare neighborhoods, and identify investment priorities before budget meetings or council hearings. Every answer is traceable to public data.</p>
+      </div>
+      <div class="audience-card">
+        <div class="ac-icon ac-icon-2">🔬</div>
+        <h3>Researchers and data scientists</h3>
+        <p>Explore the Phase 1 dataset, understand the constraint typology, and identify where Phase 2 data validation would have the greatest impact on score accuracy.</p>
+      </div>
+      <div class="audience-card">
+        <div class="ac-icon ac-icon-3">🏘️</div>
+        <h3>Community organizations</h3>
+        <p>Ask about your neighborhood in plain language. Get a score, a diagnosis, and a recommended intervention class without needing to read a methodology document.</p>
+      </div>
+      <div class="audience-card">
+        <div class="ac-icon ac-icon-4">📊</div>
+        <h3>Program designers</h3>
+        <p>Understand whether your neighborhood has a supply, delivery, coverage, or burden constraint and what type of program would actually move the needle given that diagnosis.</p>
+      </div>
+      <div class="audience-card">
+        <div class="ac-icon ac-icon-5">💼</div>
+        <h3>Funders and partners</h3>
+        <p>See exactly where the need is highest, what is driving each gap, and what the framework recommends before committing resources to a neighborhood or program.</p>
+      </div>
+      <div class="audience-card">
+        <div class="ac-icon ac-icon-6">📰</div>
+        <h3>Journalists and advocates</h3>
+        <p>Pull neighborhood-specific data points instantly. Compare communities. Understand what the numbers mean and why they matter for the people who live there.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="queries-section">
+  <div class="queries-inner">
+    <div class="section-label">What you can ask</div>
+    <h2>The Explorer understands natural language.</h2>
+    <div class="query-grid">
+      <div class="query-card"><div class="qc-icon">📍</div><div><div class="qc-label">Neighborhood score</div><div class="qc-text">"What is driving Brownsville's low score?"</div></div></div>
+      <div class="query-card"><div class="qc-icon">⚖️</div><div><div class="qc-label">Comparison</div><div class="qc-text">"Compare Brownsville and East Harlem side by side."</div></div></div>
+      <div class="query-card"><div class="qc-icon">🔍</div><div><div class="qc-label">Constraint filter</div><div class="qc-text">"Which neighborhoods have a burden constraint?"</div></div></div>
+      <div class="query-card"><div class="qc-icon">📈</div><div><div class="qc-label">Leverage point</div><div class="qc-text">"What would move the needle most for Crown Heights?"</div></div></div>
+      <div class="query-card"><div class="qc-icon">🗺️</div><div><div class="qc-label">Borough filter</div><div class="qc-text">"Show me all Tier 1 neighborhoods in Brooklyn."</div></div></div>
+      <div class="query-card"><div class="qc-icon">💊</div><div><div class="qc-label">Intervention</div><div class="qc-text">"What intervention does Mott Haven need and why?"</div></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="phase-section">
+  <div class="phase-inner">
+    <div class="phase-left">
+      <div class="section-label">Current status</div>
+      <h3>This is the demo. The live version is what comes next.</h3>
+      <p>The current Explorer runs on pattern-matching logic applied to the Phase 1 dataset. The live version with a real AI query layer, live data pipeline, and full natural language understanding is in active development, funded through Phase 2 institutional support.</p>
+    </div>
+    <div class="phase-right">
+      <div class="phase-status-item"><div class="psi-dot psi-dot-done"></div><div class="psi-label">Demo built</div><div class="psi-desc">Phase 1 dataset · Live now</div></div>
+      <div class="phase-status-item"><div class="psi-dot psi-dot-pending"></div><div class="psi-label">Funding secured</div><div class="psi-desc">Phase 2 funding · Fall 2026</div></div>
+      <div class="phase-status-item"><div class="psi-dot psi-dot-future"></div><div class="psi-label">AI layer connected</div><div class="psi-desc">AI query engine · Post-funding</div></div>
+      <div class="phase-status-item"><div class="psi-dot psi-dot-future"></div><div class="psi-label">Live data pipeline</div><div class="psi-desc">Phase 2 agency data</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-section" id="contact">
+  <div class="cta-inner">
+    <div class="section-label">Get involved</div>
+    <h2>Want to help build what comes next?</h2>
+    <p>The live Explorer requires funding, data partnerships, and technical collaboration. If you are a funder, data scientist, agency partner, or institution interested in supporting Phase 2, reach out.</p>
+    <div class="cta-buttons">
+      <a href="/cdn-cgi/l/email-protection#5a171412352d3f36366a6a1a3d373b333674393537" class="btn-primary">Get in Touch</a>
+      <a href="/methodology" class="btn-secondary">Read the Methodology</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>
+    <span><a href="/">movementopportunityindex.com</a> &nbsp;&middot;&nbsp; <a href="/framework">Framework</a> &nbsp;&middot;&nbsp; <a href="/methodology">Methodology</a> &nbsp;&middot;&nbsp; <a href="/explorer">Explorer</a> &nbsp;&middot;&nbsp; &copy; 2026 Maillard Howell</span>
+    <span><a href="/cdn-cgi/l/email-protection#c18c8f89aeb6a4adadf1f181

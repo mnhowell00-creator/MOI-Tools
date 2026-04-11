@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MOI Decision Tree · Movement Opportunity Index</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<title>MOI Decision Tree v4 · Movement Opportunity Index</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -13,13 +13,16 @@
   --w:#fff;--ow:#F8FAFC;
   --s2:#E2E8F0;--s4:#94A3B8;--s5:#64748B;--s7:#334155;--s9:#0F172A;
   --gd:#F59E0B;
-  --tier1:#a32d2d;--tier1l:#fcebeb;
-  --tier2:#854f0b;--tier2l:#faeeda;
-  --tier3:#0F766E;--tier3l:#F0FDF9;
-  --d1c:#0c447c;--d1l:#e6f1fb;
-  --d2c:#854f0b;--d2l:#faeeda;
-  --d3c:#0D9488;--d3l:#F0FDF9;
-  --d4c:#a32d2d;--d4l:#fcebeb;
+
+  --tier1:#DC2626;--tier1l:#FEE2E2;
+  --tier2:#B45309;--tier2l:#FEF3C7;
+  --tier3:#047857;--tier3l:#D1FAE5;
+
+  --supply:#1D4ED8;--supplyl:#DBEAFE;
+  --delivery:#B45309;--deliveryl:#FEF3C7;
+  --coverage:#047857;--coveragel:#D1FAE5;
+  --burden:#B91C1C;--burdenl:#FEE2E2;
+
   --ff:'DM Sans',sans-serif;--fd:'DM Serif Display',serif;
 }
 body{font-family:var(--ff);background:var(--ow);color:var(--s9);}
@@ -27,121 +30,113 @@ body{font-family:var(--ff);background:var(--ow);color:var(--s9);}
 .nav{background:var(--n);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .nav-logo{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:#fff;letter-spacing:1px;}
 .nav-dot{width:7px;height:7px;border-radius:50%;background:var(--t);}
-.nav-tag{font-size:10px;font-weight:500;color:var(--tl);background:rgba(13,148,136,.15);padding:3px 10px;border-radius:20px;}
+.nav-tag{font-size:10px;font-weight:500;color:var(--tl);background:rgba(13,148,136,.15);padding:4px 12px;border-radius:20px;}
 
-.hero{background:var(--n);padding:28px 24px 24px;border-bottom:1px solid var(--nb);}
+.hero{background:var(--n);padding:28px 24px 28px;border-bottom:1px solid var(--nb);}
 .hero-lbl{font-size:8px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--t);margin-bottom:8px;}
-.hero-title{font-family:var(--fd);font-size:clamp(18px,2.5vw,28px);color:#fff;font-weight:400;margin-bottom:8px;}
-.hero-sub{font-size:12px;color:var(--s4);line-height:1.7;max-width:640px;}
+.hero-title{font-family:var(--fd);font-size:clamp(20px,2.6vw,30px);color:#fff;font-weight:400;margin-bottom:10px;}
+.hero-sub{font-size:12.5px;color:var(--s4);line-height:1.7;max-width:720px;}
 
-.wrap{padding:20px 24px;max-width:760px;margin:0 auto;}
+.wrap{padding:24px;max-width:820px;margin:0 auto;}
 
-/* STEP INDICATOR */
-.steps{display:flex;align-items:center;gap:0;margin-bottom:20px;}
-.step{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:500;}
-.step-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;}
-.step-active .step-num{background:var(--t);color:#fff;}
-.step-done .step-num{background:var(--n);color:var(--tl);}
-.step-todo .step-num{background:var(--s2);color:var(--s5);}
-.step-active .step-lbl{color:var(--s9);font-weight:600;}
-.step-done .step-lbl{color:var(--t);}
-.step-todo .step-lbl{color:var(--s4);}
-.step-line{flex:1;height:1px;background:var(--s2);margin:0 6px;}
-.step-line.done{background:var(--t);}
-
-/* INPUT PANEL */
-.panel{background:var(--w);border:1px solid var(--s2);border-radius:10px;overflow:hidden;margin-bottom:14px;}
+.panel{background:var(--w);border:1px solid var(--s2);border-radius:10px;overflow:hidden;margin-bottom:16px;}
 .panel-head{background:var(--n);padding:14px 18px;display:flex;align-items:center;gap:10px;}
 .ph-num{width:26px;height:26px;border-radius:50%;background:var(--t);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .ph-title{font-size:13px;font-weight:600;color:#fff;}
 .ph-sub{font-size:10px;color:var(--s4);margin-top:1px;}
 .panel-body{padding:18px;}
 
-/* NEIGHBORHOOD SELECTOR */
-.hood-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:12px;}
-.hood-btn{padding:8px 12px;border:1px solid var(--s2);border-radius:6px;background:var(--w);cursor:pointer;text-align:left;transition:all .15s;}
+.hood-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-bottom:14px;}
+.hood-btn{padding:10px 12px;border:1px solid var(--s2);border-radius:6px;background:var(--w);cursor:pointer;text-align:left;transition:all .15s;font-family:inherit;}
 .hood-btn:hover{border-color:var(--t);background:var(--tt);}
-.hood-btn.selected{border-color:var(--t);background:var(--tt);}
-.hb-name{font-size:11px;font-weight:600;color:var(--s9);}
-.hb-boro{font-size:9px;color:var(--s4);}
-.hb-score{font-size:10px;font-weight:600;color:var(--t);margin-top:2px;}
-.or-divider{text-align:center;font-size:10px;color:var(--s4);margin:10px 0;}
+.hood-btn.selected{border-color:var(--t);background:var(--tt);box-shadow:0 0 0 2px rgba(13,148,136,.15);}
+.hb-name{font-size:12px;font-weight:600;color:var(--s9);}
+.hb-boro{font-size:9px;color:var(--s4);margin-top:1px;}
+.hb-score{font-size:10px;font-weight:600;color:var(--t);margin-top:3px;}
+.or-divider{text-align:center;font-size:10px;color:var(--s4);margin:14px 0;letter-spacing:.5px;}
 
-/* SLIDER INPUTS */
 .dim-inputs{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .dim-input{background:var(--ow);border:1px solid var(--s2);border-radius:6px;padding:12px;}
 .di-head{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
-.di-tag{font-size:8px;font-weight:700;padding:2px 7px;border-radius:3px;}
-.di-t1{background:var(--d1l);color:var(--d1c);}
-.di-t2{background:var(--d2l);color:var(--d2c);}
-.di-t3{background:var(--d3l);color:var(--d3c);}
-.di-t4{background:var(--d4l);color:var(--d4c);}
+.di-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;color:#fff;}
+.di-t1{background:var(--supply);}
+.di-t2{background:var(--delivery);}
+.di-t3{background:var(--coverage);}
+.di-t4{background:var(--burden);}
 .di-lbl{font-size:10px;font-weight:500;color:var(--s9);}
-.di-val{font-family:var(--fd);font-size:22px;color:var(--s9);line-height:1;margin-bottom:6px;}
+.di-val{font-family:var(--fd);font-size:24px;color:var(--s9);line-height:1;margin-bottom:6px;}
 .di-slider{width:100%;accent-color:var(--t);}
 
-/* ANALYZE BUTTON */
-.analyze-btn{width:100%;background:var(--t);color:#fff;font-family:var(--ff);font-size:13px;font-weight:600;padding:13px;border:none;border-radius:6px;cursor:pointer;transition:background .15s;margin-top:14px;}
+.analyze-btn{width:100%;background:var(--t);color:#fff;font-family:var(--ff);font-size:13px;font-weight:600;padding:14px;border:none;border-radius:6px;cursor:pointer;transition:background .15s;margin-top:14px;}
 .analyze-btn:hover{background:#0B8279;}
 .reset-btn{width:100%;background:transparent;color:var(--s5);font-family:var(--ff);font-size:11px;padding:8px;border:1px solid var(--s2);border-radius:6px;cursor:pointer;transition:all .15s;margin-top:8px;}
 .reset-btn:hover{border-color:var(--s4);color:var(--s9);}
 
-/* RESULTS */
 .results{display:none;}
 .results.show{display:block;}
 
-.result-header{background:var(--n);border-radius:10px;padding:20px;margin-bottom:14px;text-align:center;}
+.result-header{background:var(--n);border-radius:10px;padding:24px;margin-bottom:14px;text-align:center;}
 .rh-label{font-size:8px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--tl);margin-bottom:8px;}
 .rh-hood{font-family:var(--fd);font-size:22px;color:#fff;margin-bottom:6px;}
-.rh-score-row{display:flex;align-items:baseline;gap:6px;justify-content:center;margin-bottom:8px;}
-.rh-score{font-family:var(--fd);font-size:52px;color:#fff;line-height:1;}
+.rh-score-row{display:flex;align-items:baseline;gap:6px;justify-content:center;margin-bottom:10px;}
+.rh-score{font-family:var(--fd);font-size:54px;color:#fff;line-height:1;}
 .rh-of{font-size:14px;color:var(--s4);}
-.tier-badge-lg{display:inline-block;font-size:11px;font-weight:700;padding:5px 16px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;}
+.tier-badge-lg{display:inline-block;font-size:11px;font-weight:700;padding:6px 18px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;}
 .tb-1{background:var(--tier1l);color:var(--tier1);}
 .tb-2{background:var(--tier2l);color:var(--tier2);}
 .tb-3{background:var(--tier3l);color:var(--tier3);}
 
-.result-dims{background:var(--w);border:1px solid var(--s2);border-radius:10px;padding:16px;margin-bottom:14px;}
+.result-dims{background:var(--w);border:1px solid var(--s2);border-radius:10px;padding:18px;margin-bottom:14px;}
 .rd-title{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t);margin-bottom:12px;}
-.rd-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.rd-row{display:grid;grid-template-columns:32px 1fr 2fr 32px;align-items:center;gap:10px;margin-bottom:10px;}
 .rd-row:last-child{margin-bottom:0;}
-.rd-tag{font-size:8px;font-weight:700;padding:2px 7px;border-radius:3px;min-width:30px;text-align:center;}
-.rd-label{font-size:11px;color:var(--s5);flex:1;}
-.rd-bar{flex:2;height:6px;background:var(--s2);border-radius:3px;overflow:hidden;}
+.rd-tag{font-size:9px;font-weight:700;padding:3px 0;border-radius:3px;text-align:center;color:#fff;}
+.rd-tag.d1{background:var(--supply);}
+.rd-tag.d2{background:var(--delivery);}
+.rd-tag.d3{background:var(--coverage);}
+.rd-tag.d4{background:var(--burden);}
+.rd-label{font-size:11.5px;color:var(--s7);}
+.rd-bar{height:6px;background:var(--s2);border-radius:3px;overflow:hidden;}
 .rdb-fill{height:100%;border-radius:3px;}
-.rd-score{font-size:12px;font-weight:600;color:var(--s9);min-width:28px;text-align:right;}
+.rdb-fill.d1{background:var(--supply);}
+.rdb-fill.d2{background:var(--delivery);}
+.rdb-fill.d3{background:var(--coverage);}
+.rdb-fill.d4{background:var(--burden);}
+.rd-score{font-size:12px;font-weight:600;color:var(--s9);text-align:right;font-variant-numeric:tabular-nums;}
 
-.result-diagnosis{background:var(--w);border:1px solid var(--s2);border-radius:10px;padding:16px;margin-bottom:14px;}
-.constraint-display{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:6px;margin-bottom:10px;}
-.cd-label{font-size:11px;font-weight:600;}
-.result-action{background:var(--nm);border-radius:10px;padding:16px;margin-bottom:14px;}
+.result-diagnosis{background:var(--w);border:1px solid var(--s2);border-radius:10px;padding:18px;margin-bottom:14px;}
+.constraint-display{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:6px;margin-bottom:12px;}
+.cd-label{font-size:13px;font-weight:700;}
+.logic-note{font-size:11px;color:var(--s5);line-height:1.7;}
+.logic-note strong{color:var(--s9);}
+
+.result-action{background:var(--nm);border-radius:10px;padding:20px;margin-bottom:14px;}
 .ra-title{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--tl);margin-bottom:8px;}
-.ra-heading{font-family:var(--fd);font-size:16px;color:#fff;margin-bottom:6px;}
-.ra-body{font-size:11px;color:var(--s4);line-height:1.7;}
-.ra-timeline{display:inline-block;font-size:9px;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(13,148,136,.2);color:var(--tl);margin-top:8px;}
+.ra-heading{font-family:var(--fd);font-size:18px;color:#fff;margin-bottom:8px;}
+.ra-body{font-size:11.5px;color:var(--s4);line-height:1.7;}
+.ra-timeline{display:inline-block;font-size:9px;font-weight:600;padding:4px 12px;border-radius:20px;background:rgba(13,148,136,.2);color:var(--tl);margin-top:10px;letter-spacing:.5px;}
 
-.foot{background:var(--n);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.foot{background:var(--n);padding:18px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:24px;}
 .foot-copy{font-size:10px;color:var(--s4);}
 .foot-url{font-size:10px;color:var(--tl);font-weight:500;}
-.foot-note{font-size:9px;color:var(--s7);max-width:400px;line-height:1.5;}
+.foot-note{font-size:9px;color:var(--s7);max-width:420px;line-height:1.5;}
 </style>
 </head>
 <body>
 
 <nav class="nav">
   <div class="nav-logo"><div class="nav-dot"></div>MOVEMENT OPPORTUNITY INDEX</div>
-  <span class="nav-tag">Decision Tree · Phase 1</span>
+  <span class="nav-tag">Decision Tree v4 &middot; Phase 1</span>
 </nav>
 
 <div class="hero">
-  <div class="hero-lbl">Live Tool — Phase 1</div>
+  <div class="hero-lbl">Live Tool &middot; Phase 1</div>
   <h1 class="hero-title">Action Decision Tree</h1>
-  <p class="hero-sub">Select a neighborhood or enter dimension scores manually. The system derives the MOI score, intervention tier, primary constraint type, and recommended action class with a deployment timeline.</p>
+  <p class="hero-sub">Select a neighborhood or enter dimension scores manually. The engine applies Decision Rule v1 to derive the MOI score, intervention tier, primary constraint type, and recommended action class. Driven by ENGINE_KEY_v2.</p>
 </div>
 
 <div class="wrap">
 
-  <!-- INPUT: Select neighborhood or enter manually -->
   <div class="panel">
     <div class="panel-head">
       <div class="ph-num">1</div>
@@ -149,7 +144,7 @@ body{font-family:var(--ff);background:var(--ow);color:var(--s9);}
     </div>
     <div class="panel-body">
       <div class="hood-grid" id="hoodGrid"></div>
-      <div class="or-divider">— or enter scores manually below —</div>
+      <div class="or-divider">or enter scores manually below</div>
       <div class="dim-inputs">
         <div class="dim-input">
           <div class="di-head"><span class="di-tag di-t1">D1</span><span class="di-lbl">Access to Facilities</span></div>
@@ -172,80 +167,136 @@ body{font-family:var(--ff);background:var(--ow);color:var(--s9);}
           <input type="range" class="di-slider" id="d4" min="0" max="100" value="50" oninput="updateVal('d4',this.value)">
         </div>
       </div>
-      <button class="analyze-btn" onclick="analyze()">Run Diagnosis →</button>
+      <button class="analyze-btn" onclick="analyze()">Run Diagnosis</button>
       <button class="reset-btn" onclick="reset()">Reset</button>
     </div>
   </div>
 
-  <!-- RESULTS -->
   <div class="results" id="results">
-
     <div class="result-header" id="resultHeader"></div>
-
     <div class="result-dims" id="resultDims"></div>
-
     <div class="result-diagnosis" id="resultDiagnosis"></div>
-
     <div class="result-action" id="resultAction"></div>
-
   </div>
 
 </div>
 
 <footer class="foot">
-  <span class="foot-copy">© 2026 Maillard Howell</span>
+  <span class="foot-copy">&copy; 2026 Black Roots Lab</span>
   <span class="foot-url">movementopportunityindex.com</span>
-  <span class="foot-note">Phase 1 covers 10 priority NYC neighborhoods. Scores are research-informed estimates from publicly available data.</span>
+  <span class="foot-note">Decision Rule v1 &middot; ENGINE_KEY_v2 &middot; Phase 1 covers 10 priority NYC neighborhoods. Scores are research-informed estimates from publicly available data.</span>
 </footer>
 
 <script>
+// Canonical Phase 1 dataset - computed from MOI Scoring Engine v2 under Decision Rule v1
 const neighborhoods = [
-  {name:"Brownsville",boro:"Brooklyn",d1:19,d2:22,d3:31,d4:18},
-  {name:"East New York",boro:"Brooklyn",d1:28,d2:30,d3:35,d4:22},
-  {name:"Hunts Point",boro:"Bronx",d1:24,d2:28,d3:38,d4:26},
-  {name:"Mott Haven",boro:"Bronx",d1:30,d2:35,d3:40,d4:25},
-  {name:"East Harlem",boro:"Manhattan",d1:32,d2:40,d3:42,d4:20},
-  {name:"South Jamaica",boro:"Queens",d1:42,d2:38,d3:44,d4:35},
-  {name:"Crown Heights",boro:"Brooklyn",d1:48,d2:42,d3:46,d4:38},
-  {name:"Washington Heights",boro:"Manhattan",d1:55,d2:50,d3:54,d4:45},
-  {name:"Flatbush",boro:"Brooklyn",d1:60,d2:55,d3:60,d4:52},
-  {name:"Jackson Heights",boro:"Queens",d1:65,d2:58,d3:64,d4:56},
+  {name:"Brownsville",         boro:"Brooklyn",  d1:11, d2:14, d3:21, d4:24},
+  {name:"Hunts Point",         boro:"Bronx",     d1:24, d2:23, d3:33, d4:18},
+  {name:"East New York",       boro:"Brooklyn",  d1:33, d2:22, d3:28, d4:29},
+  {name:"Mott Haven",          boro:"Bronx",     d1:30, d2:27, d3:38, d4:16},
+  {name:"East Harlem",         boro:"Manhattan", d1:59, d2:36, d3:43, d4:37},
+  {name:"South Jamaica",       boro:"Queens",    d1:51, d2:38, d3:50, d4:39},
+  {name:"Crown Heights",       boro:"Brooklyn",  d1:49, d2:44, d3:54, d4:51},
+  {name:"Jackson Heights",     boro:"Queens",    d1:45, d2:45, d3:71, d4:66},
+  {name:"Flatbush",            boro:"Brooklyn",  d1:53, d2:52, d3:70, d4:54},
+  {name:"Washington Heights",  boro:"Manhattan", d1:73, d2:48, d3:65, d4:55}
 ];
 
-const actions={
-  t1_supply:{heading:"Emergency infrastructure investment",body:"Facilities are absent or permanently closed. No programming is possible without physical infrastructure. The priority is capital investment in parks, recreation centers, or school gymnasium partnerships. Timeline is 12–36 months for new construction; 3–12 months for reopening closed facilities.",timeline:"12–36 month capital cycle"},
-  t1_delivery:{heading:"Emergency program activation",body:"Facilities exist but no structured programs run. Immediate activation of DYCD and Parks programming is the fastest lever. Focus on deploying existing Shape Up NYC capacity, after-school movement programs, and NYCHA community center activation. Timeline is 3–6 months.",timeline:"3–6 month activation"},
-  t1_burden:{heading:"Health-first intervention",body:"Chronic disease prevalence is so elevated it suppresses movement capacity. Clinical intervention must precede recreational programming. Partner with DOHMH and H+H on cardiometabolic screening, diabetes prevention, and metabolic health programs. Movement programming follows in phase two of the intervention.",timeline:"6–18 month multi-phase"},
-  t2_supply:{heading:"Targeted facility investment",body:"Access gaps exist but are not acute. Prioritize repair, reopening, and public-private partnerships. Activate NYCHA campus spaces, school facilities, and DOE gyms for community use during non-school hours. Timeline is 6–18 months.",timeline:"6–18 month investment cycle"},
-  t2_delivery:{heading:"Program expansion and activation",body:"Infrastructure is adequate. Focus on increasing program frequency, extending hours, and recruiting community-based organizations to run programming in existing spaces. Leverage DYCD community schools grants and Parks partnership frameworks.",timeline:"3–9 month activation"},
-  t2_coverage:{heading:"Outreach and participation strategy",body:"Programs and facilities are present but residents are not participating. Invest in culturally relevant outreach, subsidized access programs, trusted community messenger campaigns, and reduced-barrier enrollment. Partner with CBOs and faith institutions for local reach.",timeline:"6–12 month engagement"},
-  t3_any:{heading:"Maintenance and monitoring",body:"Current conditions are stable. Focus on sustaining program quality, monitoring participation trends, and preventing backslide. This neighborhood should serve as a model for neighboring communities.",timeline:"Ongoing monitoring"},
+// Action copy keyed by tier + constraint. 12 valid action classes.
+const actions = {
+  t1_supply:{
+    heading:"Emergency infrastructure investment",
+    body:"Facilities are absent or permanently closed. No programming is possible without physical infrastructure. Priority is capital investment in parks, recreation centers, or school gymnasium partnerships. Focus on reopening closed facilities fastest, new construction as parallel track.",
+    timeline:"12 to 36 month capital cycle"},
+  t1_delivery:{
+    heading:"Emergency program activation",
+    body:"Facilities exist but no structured programs run. Immediate activation of DYCD and Parks programming is the fastest lever. Deploy existing Shape Up NYC capacity, after-school movement programs, and NYCHA community center activation.",
+    timeline:"3 to 6 month activation"},
+  t1_coverage:{
+    heading:"Urgent outreach and enrollment push",
+    body:"Infrastructure and programs are present but residents are not participating at crisis levels. Deploy community ambassadors, faith institution partnerships, multilingual outreach, and subsidized-access programs. Address cultural and economic barriers to enrollment.",
+    timeline:"6 to 12 month engagement"},
+  t1_burden:{
+    heading:"Health-first intervention",
+    body:"Chronic disease prevalence is severe enough to suppress movement capacity. Clinical intervention must precede recreational programming. Partner with DOHMH and H+H on cardiometabolic screening, diabetes prevention, and metabolic health programs. Movement programming follows in phase two.",
+    timeline:"6 to 18 month multi-phase"},
+
+  t2_supply:{
+    heading:"Targeted facility investment",
+    body:"Access gaps exist but are not acute. Prioritize repair, reopening, and public-private partnerships. Activate NYCHA campus spaces, school facilities, and DOE gyms for community use during non-school hours.",
+    timeline:"6 to 18 month investment cycle"},
+  t2_delivery:{
+    heading:"Program expansion and activation",
+    body:"Infrastructure is adequate. Focus on increasing program frequency, extending hours, and recruiting community-based organizations to run programming in existing spaces. Leverage DYCD community schools grants and Parks partnership frameworks.",
+    timeline:"3 to 9 month activation"},
+  t2_coverage:{
+    heading:"Outreach and participation strategy",
+    body:"Programs and facilities are present but residents are not participating. Invest in culturally relevant outreach, subsidized access programs, trusted community messenger campaigns, and reduced-barrier enrollment. Partner with CBOs and faith institutions for local reach.",
+    timeline:"6 to 12 month engagement"},
+  t2_burden:{
+    heading:"Preventive health partnership",
+    body:"Disease burden is elevated but not crisis level. Partner with DOHMH primary care network on preventive screening, health coaching, and chronic disease management integrated into movement programming. Combine clinical and recreational touchpoints.",
+    timeline:"6 to 12 month integration"},
+
+  t3_supply:{
+    heading:"Infrastructure maintenance and capital planning",
+    body:"Current facility conditions are stable. Focus on preventive maintenance, scheduled capital refresh, and planning for population growth. Monitor for early warning signs of decline.",
+    timeline:"Ongoing monitoring"},
+  t3_delivery:{
+    heading:"Programming quality sustainment",
+    body:"Program offerings are adequate. Focus on sustaining quality, refreshing content, and mentoring neighboring neighborhoods. This community can serve as a model for peer learning.",
+    timeline:"Ongoing monitoring"},
+  t3_coverage:{
+    heading:"Participation monitoring and retention",
+    body:"Participation rates are healthy. Focus on retention, preventing backslide, and sharing successful engagement practices with lower-tier neighborhoods.",
+    timeline:"Ongoing monitoring"},
+  t3_burden:{
+    heading:"Chronic disease prevention maintenance",
+    body:"Disease burden is within acceptable range. Sustain preventive screening, wellness programming, and partnership with local health providers. Monitor for emerging health trends.",
+    timeline:"Ongoing monitoring"}
 };
 
-function calcScore(d1,d2,d3,d4){return Math.round((parseInt(d1)+parseInt(d2)+parseInt(d3)+parseInt(d4))/4);}
+function calcScore(d1,d2,d3,d4){
+  return Math.round((parseInt(d1)+parseInt(d2)+parseInt(d3)+parseInt(d4))/4);
+}
 
-function getTier(score){return score<40?1:score<65?2:3;}
+// Decision Rule v1: T1 < 45, T2 45 to 65 inclusive, T3 > 65
+function getTier(moi){
+  if(moi<45) return 1;
+  if(moi<=65) return 2;
+  return 3;
+}
 
+// Decision Rule v1:
+// - If D4 <= 30, constraint = burden (severity override)
+// - Else, constraint = lowest of {D1, D2, D3} with upstream-first tie-break D1 > D2 > D3
 function getConstraint(d1,d2,d3,d4){
-  const scores=[parseInt(d1),parseInt(d2),parseInt(d3),parseInt(d4)];
-  const labels=['supply','delivery','coverage','burden'];
-  // D4 burden check — if it's the lowest and below threshold
-  if(scores[3]<30&&scores[3]===Math.min(...scores))return'burden';
-  const minIdx=scores.indexOf(Math.min(...scores));
-  return labels[minIdx];
+  const D1=parseInt(d1), D2=parseInt(d2), D3=parseInt(d3), D4=parseInt(d4);
+  if(D4<=30) return 'burden';
+  const m = Math.min(D1,D2,D3);
+  if(D1===m) return 'supply';
+  if(D2===m) return 'delivery';
+  return 'coverage';
 }
 
-function constraintLabel(c){const m={supply:'Supply Constraint',delivery:'Delivery Constraint',coverage:'Coverage Constraint',burden:'Burden Constraint'};return m[c];}
-function constraintColors(c){
-  if(c==='supply')return{bg:'var(--tier1l)',color:'var(--tier1)'};
-  if(c==='delivery')return{bg:'var(--tier2l)',color:'var(--tier2)'};
-  if(c==='coverage')return{bg:'var(--d1l)',color:'var(--d1c)'};
-  return{bg:'var(--tier2l)',color:'var(--tier2)'};
+function constraintLabel(c){
+  const m={supply:'Supply Constraint',delivery:'Delivery Constraint',coverage:'Coverage Constraint',burden:'Burden Constraint'};
+  return m[c];
 }
-function dimBarColor(d){return['var(--d1c)','var(--d2c)','var(--d3c)','var(--d4c)'][d];}
-function dimTagClass(d){return['di-t1','di-t2','di-t3','di-t4'][d];}
-function dimLabel(d){return['Access to Facilities','Programming Coverage','Participation Rates','Disease Burden'][d];}
-function dimShort(d){return['D1','D2','D3','D4'][d];}
+
+function constraintColors(c){
+  const map={
+    supply:{bg:'var(--supplyl)',color:'var(--supply)'},
+    delivery:{bg:'var(--deliveryl)',color:'var(--delivery)'},
+    coverage:{bg:'var(--coveragel)',color:'var(--coverage)'},
+    burden:{bg:'var(--burdenl)',color:'var(--burden)'}
+  };
+  return map[c];
+}
+
+function dimClass(i){return ['d1','d2','d3','d4'][i];}
+function dimLabel(i){return ['Access to Facilities','Programming Coverage','Participation Rates','Disease Burden'][i];}
+function dimShort(i){return ['D1','D2','D3','D4'][i];}
 
 let selectedHood=null;
 
@@ -253,7 +304,7 @@ function buildHoodGrid(){
   const grid=document.getElementById('hoodGrid');
   grid.innerHTML=neighborhoods.map((n,i)=>{
     const score=calcScore(n.d1,n.d2,n.d3,n.d4);
-    return`<button class="hood-btn" onclick="selectHood(${i})" id="hb${i}">
+    return `<button class="hood-btn" onclick="selectHood(${i})" id="hb${i}">
       <div class="hb-name">${n.name}</div>
       <div class="hb-boro">${n.boro}</div>
       <div class="hb-score">MOI ${score}</div>
@@ -279,8 +330,7 @@ function updateVal(id,val){
 }
 
 function tierBadgeClass(t){return t===1?'tb-1':t===2?'tb-2':'tb-3';}
-function tierLabel(t){return t===1?'Tier 1 — Critical':t===2?'Tier 2 — Moderate':'Tier 3 — Stable';}
-function tierBorderColor(t){return t===1?'var(--tier1)':t===2?'var(--tier2)':'var(--tier3)';}
+function tierLabel(t){return t===1?'Tier 1 Critical':t===2?'Tier 2 Moderate':'Tier 3 Stable';}
 
 function analyze(){
   const d1=document.getElementById('d1').value;
@@ -292,9 +342,10 @@ function analyze(){
   const constraint=getConstraint(d1,d2,d3,d4);
   const cc=constraintColors(constraint);
   const hoodName=selectedHood!==null?neighborhoods[selectedHood].name:'Custom Input';
-  const actionKey=tier===3?'t3_any':`t${tier}_${constraint}`;
-  const action=actions[actionKey]||actions['t2_coverage'];
+  const actionKey=`t${tier}_${constraint}`;
+  const action=actions[actionKey];
   const dims=[parseInt(d1),parseInt(d2),parseInt(d3),parseInt(d4)];
+  const burdenOverride=parseInt(d4)<=30;
 
   document.getElementById('resultHeader').innerHTML=`
     <div class="rh-label">MOI Diagnosis</div>
@@ -306,18 +357,22 @@ function analyze(){
     <div class="rd-title">Dimension Breakdown</div>
     ${dims.map((v,i)=>`
     <div class="rd-row">
-      <span class="rd-tag ${dimTagClass(i)}">${dimShort(i)}</span>
+      <span class="rd-tag ${dimClass(i)}">${dimShort(i)}</span>
       <span class="rd-label">${dimLabel(i)}</span>
-      <div class="rd-bar"><div class="rdb-fill" style="width:${v}%;background:${dimBarColor(i)}"></div></div>
+      <div class="rd-bar"><div class="rdb-fill ${dimClass(i)}" style="width:${v}%"></div></div>
       <span class="rd-score">${v}</span>
     </div>`).join('')}`;
+
+  const logicText = burdenOverride
+    ? `<strong>Burden severity override triggered:</strong> D4 Disease Burden is ${dims[3]}, at or below the severity threshold of 30. Chronic disease load is treated as the primary constraint regardless of other dimension scores. This reflects the reality that severe disease burden suppresses capacity to benefit from recreational intervention until clinical care is in place.`
+    : `<strong>Lowest upstream dimension:</strong> The primary constraint is the lowest-scoring dimension among D1, D2, and D3. Addressing this constraint first produces the highest marginal improvement in movement equity. Ties break upstream-first: Supply, then Delivery, then Coverage.`;
 
   document.getElementById('resultDiagnosis').innerHTML=`
     <div class="rd-title">Primary Constraint Identified</div>
     <div class="constraint-display" style="background:${cc.bg}">
-      <div class="cd-label" style="color:${cc.color};font-size:13px;font-weight:700;">${constraintLabel(constraint)}</div>
+      <div class="cd-label" style="color:${cc.color};">${constraintLabel(constraint)}</div>
     </div>
-    <p style="font-size:11px;color:var(--s5);line-height:1.7;">The lowest-scoring dimension is the primary driver of the MOI score gap. Addressing this constraint first produces the highest marginal improvement in overall movement equity for this neighborhood.</p>`;
+    <p class="logic-note">${logicText}</p>`;
 
   document.getElementById('resultAction').innerHTML=`
     <div class="ra-title">Recommended Action Class</div>
