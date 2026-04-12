@@ -344,35 +344,42 @@ function compareCard(h1, h2) {
 
 function generateResponse(query) {
   const q = query.toLowerCase();
+  const allHoods = Object.keys(neighborhoods);
+  const hoodMatch = allHoods.find(h => q.includes(h.toLowerCase()));
+  const multiHoodMatch = allHoods.filter(h => q.includes(h.toLowerCase()));
+  const constraintTypes = ['supply','delivery','coverage','burden'];
+  const constraintMatch = constraintTypes.find(c => q.includes(c));
 
-  // SCORE / WHAT IS
-  const hoodMatch = Object.keys(neighborhoods).find(h => q.includes(h.toLowerCase()));
-
-  if ((q.includes('driv') || q.includes('what is') || q.includes('score') || q.includes('tell me about') || q.includes('explain')) && hoodMatch) {
-    const n = neighborhoods[hoodMatch];
-    const lowest = ['d1','d2','d3','d4'].reduce((a,b) => n[a]<n[b]?a:b);
-    return `<strong>${hoodMatch}</strong> scores <strong>${n.score} out of 100</strong>, placing it in <strong>${tierLabels[n.tier]}</strong>.<br><br>
-The primary driver is a <strong>${constraintLabels[n.constraint]}</strong>. The lowest-scoring dimension is <strong>${dimLabels[lowest]} (${n[lowest]})</strong>, which is pulling the composite score down most significantly.
-${scoreCard(hoodMatch)}
-${rxCard(hoodMatch)}`;
-  }
-
-  // COMPARE
-  const compareMatch = Object.keys(neighborhoods).filter(h => q.includes(h.toLowerCase()));
-  if ((q.includes('compar') || q.includes('vs') || q.includes('versus') || q.includes('difference')) && compareMatch.length >= 2) {
-    const h1 = compareMatch[0], h2 = compareMatch[1];
+  // ---- 1. COMPARE (two neighborhoods mentioned) ----
+  if (multiHoodMatch.length >= 2) {
+    const h1 = multiHoodMatch[0], h2 = multiHoodMatch[1];
     const n1 = neighborhoods[h1], n2 = neighborhoods[h2];
     const gap = Math.abs(n1.score - n2.score);
     const higher = n1.score > n2.score ? h1 : h2;
-    return `<strong>${h1}</strong> scores <strong>${n1.score}</strong> and <strong>${h2}</strong> scores <strong>${n2.score}</strong>. That is a ${gap}-point gap.<br><br>
-<strong>${higher}</strong> has the stronger overall position. The most significant dimensional difference is in Disease Burden — ${h1} scores ${n1.d4} vs ${h2} at ${n2.d4}. Different constraint types mean they need different interventions.
-${compareCard(h1, h2)}`;
+    const lower = n1.score > n2.score ? h2 : h1;
+    const biggestDimGap = ['d1','d2','d3','d4'].map(d=>({d,gap:Math.abs(n1[d]-n2[d])})).sort((a,b)=>b.gap-a.gap)[0];
+    return `<strong>${h1}</strong> scores <strong>${n1.score}</strong> and <strong>${h2}</strong> scores <strong>${n2.score}</strong>. That is a <strong>${gap} point gap</strong>.<br><br>
+<strong>${higher}</strong> has the stronger overall position. The biggest dimensional difference is in <strong>${dimLabels[biggestDimGap.d]}</strong> (${biggestDimGap.gap} point spread).<br><br>
+${h1} has a <strong>${constraintLabels[n1.constraint]}</strong> while ${h2} has a <strong>${constraintLabels[n2.constraint]}</strong>${n1.constraint !== n2.constraint ? '. Different constraint types mean they need fundamentally different interventions.' : '. Same constraint type, but severity differs.'}
+${compareCard(h1, h2)}
+<div class="rx-block"><div class="rx-label">${h1} needs</div><div class="rx-text">${n1.rx}</div></div>
+<div class="rx-block"><div class="rx-label">${h2} needs</div><div class="rx-text">${n2.rx}</div></div>`;
   }
 
-  // CONSTRAINT FILTER
-  const constraintTypes = ['supply','delivery','coverage','burden'];
-  const constraintMatch = constraintTypes.find(c => q.includes(c));
-  if (constraintMatch && (q.includes('which') || q.includes('all') || q.includes('list') || q.includes('show'))) {
+  // ---- 2. CONSTRAINT QUERIES (mention a constraint type) ----
+  if (constraintMatch) {
+    // If asking about a specific neighborhood's constraint
+    if (hoodMatch) {
+      const n = neighborhoods[hoodMatch];
+      return `<strong>${hoodMatch}</strong> has a <strong>${constraintLabels[n.constraint]}</strong>.<br><br>
+${n.constraint === constraintMatch
+  ? `Yes, ${hoodMatch} is classified as ${constraintLabels[constraintMatch]}. This means ${constraintExplain(constraintMatch)}`
+  : `Actually, ${hoodMatch}'s constraint type is <strong>${constraintLabels[n.constraint]}</strong>, not ${constraintLabels[constraintMatch]}. ${constraintExplain(n.constraint)}`
+}
+${scoreCard(hoodMatch)}
+${rxCard(hoodMatch)}`;
+    }
+    // Otherwise list all neighborhoods with that constraint
     const matches = Object.entries(neighborhoods).filter(([,n]) => n.constraint === constraintMatch);
     return `<strong>${matches.length} neighborhood${matches.length>1?'s':''}</strong> in the Phase 1 dataset have a <strong>${constraintLabels[constraintMatch]}</strong>:<br><br>
 ${matches.map(([name,n]) => `<div class="data-card" style="margin:6px 0;padding:10px 12px;">
@@ -381,55 +388,192 @@ ${matches.map(([name,n]) => `<div class="data-card" style="margin:6px 0;padding:
     <div style="font-family:var(--fd);font-size:20px;color:#fff;">${n.score} <span class="tier-pill ${tierClasses[n.tier]}">${'T'+n.tier}</span></div>
   </div>
 </div>`).join('')}
-<br>A <strong>${constraintLabels[constraintMatch]}</strong> means ${
-  constraintMatch==='supply'?'the physical infrastructure is absent or closed. Capital investment is required before any programming can succeed.' :
-  constraintMatch==='delivery'?'facilities exist but structured programs are not running. The fix is activation, not construction.' :
-  constraintMatch==='coverage'?'programs and facilities exist but residents are not participating. Outreach, cultural relevance, and access are the levers.' :
-  'chronic disease burden is so high it suppresses capacity for movement. Health-first intervention must precede recreational programming.'
-}`;
+<br>${constraintExplain(constraintMatch)}`;
   }
 
-  // TIER FILTER
-  if ((q.includes('tier 1') || q.includes('worst') || q.includes('critical') || q.includes('most urgent')) && (q.includes('brooklyn') || q.includes('bronx') || q.includes('manhattan') || q.includes('queens') || q.includes('all') || q.includes('which') || q.includes('show'))) {
-    const borough = ['Brooklyn','Bronx','Manhattan','Queens'].find(b => q.includes(b.toLowerCase()));
-    const tier = q.includes('tier 2') ? 2 : 1;
-    const matches = Object.entries(neighborhoods).filter(([,n]) => n.tier === tier && (!borough || n.boro === borough));
-    return `<strong>${matches.length} Tier ${tier} neighborhood${matches.length>1?'s':''}</strong>${borough?' in '+borough:''}:<br><br>
-${matches.sort((a,b)=>a[1].score-b[1].score).map(([name,n])=>`<div class="data-card" style="margin:6px 0;padding:10px 12px;">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-    <div><strong style="color:#fff;font-size:12px;">${name}</strong> <span style="font-size:9px;color:var(--s4);">${n.boro}</span></div>
-    <div style="font-family:var(--fd);font-size:20px;color:#fff;">${n.score}</div>
-  </div>
-  <span class="constraint-pill ${constraintClasses[n.constraint]}">${constraintLabels[n.constraint]}</span>
+  // ---- 3. CONSTRAINT GENERAL (asking about constraint without naming a type) ----
+  if (q.includes('constraint') || q.includes('what type') || q.includes('what kind') || q.includes('why is') || q.includes('what is wrong') || q.includes('what\'s wrong') || q.includes('problem') || q.includes('issue') || q.includes('diagnos')) {
+    if (hoodMatch) {
+      const n = neighborhoods[hoodMatch];
+      return `<strong>${hoodMatch}</strong> is classified as a <strong>${constraintLabels[n.constraint]}</strong>.<br><br>
+${constraintExplain(n.constraint)}<br><br>
+The MOI framework identifies four constraint types: Supply (infrastructure is missing), Delivery (facilities exist but programs are not running), Coverage (programs exist but residents are not participating), and Burden (disease burden is so severe it must be addressed before recreational interventions can work).
+${scoreCard(hoodMatch)}
+${rxCard(hoodMatch)}`;
+    }
+    // No hood mentioned, show all constraint distribution
+    const dist = {};
+    Object.entries(neighborhoods).forEach(([name,n]) => {
+      if (!dist[n.constraint]) dist[n.constraint] = [];
+      dist[n.constraint].push({name, score:n.score, tier:n.tier});
+    });
+    return `The Phase 1 dataset has <strong>four constraint types</strong> distributed across 10 neighborhoods:<br><br>
+${Object.entries(dist).map(([type,hoods]) => `<div class="data-card" style="margin:6px 0;padding:10px 12px;">
+  <div class="dc-label">${constraintLabels[type]} (${hoods.length})</div>
+  <div style="font-size:10px;color:var(--s4);line-height:1.6;">${hoods.map(h=>`${h.name} (${h.score})`).join(', ')}</div>
+  <div style="font-size:10px;color:var(--tl);margin-top:4px;">${constraintExplainShort(type)}</div>
 </div>`).join('')}`;
   }
 
-  // MOVE THE NEEDLE
-  if (q.includes('move the needle') || q.includes('improve') || q.includes('what would') || q.includes('needle')) {
+  // ---- 4. TIER QUERIES ----
+  if (q.includes('tier') || q.includes('worst') || q.includes('critical') || q.includes('most urgent') || q.includes('best') || q.includes('stable') || q.includes('moderate') || q.includes('highest score') || q.includes('lowest score') || q.includes('ranking') || q.includes('rank')) {
+    const borough = ['Brooklyn','Bronx','Manhattan','Queens'].find(b => q.includes(b.toLowerCase()));
+    let tier = null;
+    if (q.includes('tier 1') || q.includes('worst') || q.includes('critical') || q.includes('most urgent') || q.includes('lowest')) tier = 1;
+    else if (q.includes('tier 2') || q.includes('moderate') || q.includes('middle')) tier = 2;
+    else if (q.includes('tier 3') || q.includes('best') || q.includes('stable') || q.includes('highest')) tier = 3;
+
+    let matches = Object.entries(neighborhoods);
+    if (tier) matches = matches.filter(([,n]) => n.tier === tier);
+    if (borough) matches = matches.filter(([,n]) => n.boro === borough);
+    matches.sort((a,b) => a[1].score - b[1].score);
+
+    const tierLabel = tier ? `Tier ${tier}` : 'all';
+    const boroLabel = borough ? ` in ${borough}` : '';
+    return `<strong>${matches.length} ${tierLabel} neighborhood${matches.length>1?'s':''}${boroLabel}</strong>, ranked by MOI score:<br><br>
+${matches.map(([name,n],i)=>`<div class="data-card" style="margin:6px 0;padding:10px 12px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+    <div><strong style="color:#fff;font-size:12px;">#${i+1} ${name}</strong> <span style="font-size:9px;color:var(--s4);">${n.boro}</span></div>
+    <div style="font-family:var(--fd);font-size:20px;color:#fff;">${n.score}</div>
+  </div>
+  <span class="tier-pill ${tierClasses[n.tier]}">${tierLabels[n.tier]}</span>
+  <span class="constraint-pill ${constraintClasses[n.constraint]}" style="margin-left:6px;">${constraintLabels[n.constraint]}</span>
+</div>`).join('')}`;
+  }
+
+  // ---- 5. BOROUGH QUERIES ----
+  if (q.includes('brooklyn') || q.includes('bronx') || q.includes('manhattan') || q.includes('queens')) {
+    const borough = ['Brooklyn','Bronx','Manhattan','Queens'].find(b => q.includes(b.toLowerCase()));
+    const matches = Object.entries(neighborhoods).filter(([,n]) => n.boro === borough).sort((a,b) => a[1].score - b[1].score);
+    if (matches.length > 0) {
+      const avg = Math.round(matches.reduce((s,[,n]) => s+n.score, 0) / matches.length);
+      return `<strong>${matches.length} Phase 1 neighborhood${matches.length>1?'s':''} in ${borough}</strong> (average MOI: ${avg}):<br><br>
+${matches.map(([name,n])=>`<div class="data-card" style="margin:6px 0;padding:10px 12px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+    <div><strong style="color:#fff;font-size:12px;">${name}</strong></div>
+    <div style="font-family:var(--fd);font-size:20px;color:#fff;">${n.score}</div>
+  </div>
+  <span class="tier-pill ${tierClasses[n.tier]}">${tierLabels[n.tier]}</span>
+  <span class="constraint-pill ${constraintClasses[n.constraint]}" style="margin-left:6px;">${constraintLabels[n.constraint]}</span>
+</div>`).join('')}`;
+    }
+  }
+
+  // ---- 6. MOVE THE NEEDLE / IMPROVE / RECOMMEND / INTERVENTION / ACTION ----
+  if (q.includes('move the needle') || q.includes('needle') || q.includes('improve') || q.includes('what would') || q.includes('what should') || q.includes('recommend') || q.includes('intervention') || q.includes('action') || q.includes('what can') || q.includes('how to') || q.includes('how do') || q.includes('fix') || q.includes('help') || q.includes('priority') || q.includes('what do you suggest') || q.includes('strategy')) {
     const hood = hoodMatch || selectedHood;
     const n = neighborhoods[hood];
     const dims = ['d1','d2','d3','d4'].map(d=>({d,score:n[d]})).sort((a,b)=>a.score-b.score);
     const weakest = dims[0];
-    return `For <strong>${hood}</strong>, the highest-leverage move is improving <strong>${dimLabels[weakest.d]}</strong>, currently the lowest dimension at <strong>${weakest.score}</strong>.<br><br>
-A 10-point improvement in ${dimLabels[weakest.d]} alone would move the composite MOI from <strong>${n.score}</strong> to approximately <strong>${Math.round(n.score+2.5)}</strong>. More importantly, it would address the root cause of the <strong>${constraintLabels[n.constraint]}</strong>.
+    const second = dims[1];
+    return `For <strong>${hood}</strong>, the highest leverage move is improving <strong>${dimLabels[weakest.d]}</strong>, currently the lowest dimension at <strong>${weakest.score}</strong>.<br><br>
+A 10 point improvement in ${dimLabels[weakest.d]} alone would move the composite MOI from <strong>${n.score}</strong> to approximately <strong>${Math.round(n.score+2.5)}</strong>. The second priority would be <strong>${dimLabels[second.d]}</strong> at ${second.score}.<br><br>
+The root cause is a <strong>${constraintLabels[n.constraint]}</strong>, which shapes the type of intervention required.
 ${scoreCard(hood)}
 ${rxCard(hood)}`;
   }
 
-  // DEFAULT
+  // ---- 7. DIMENSION SPECIFIC QUERIES ----
+  if (q.includes('access') || q.includes('facilit') || q.includes('d1') || q.includes('programming') || q.includes('d2') || q.includes('particip') || q.includes('d3') || q.includes('disease') || q.includes('burden') || q.includes('d4') || q.includes('health') || q.includes('diabetes') || q.includes('obesity')) {
+    let dimKey = null;
+    if (q.includes('access') || q.includes('facilit') || q.includes('d1')) dimKey = 'd1';
+    else if (q.includes('programming') || q.includes('program') || q.includes('d2')) dimKey = 'd2';
+    else if (q.includes('particip') || q.includes('d3')) dimKey = 'd3';
+    else if (q.includes('disease') || q.includes('d4') || q.includes('diabetes') || q.includes('obesity') || q.includes('health')) dimKey = 'd4';
+
+    if (dimKey) {
+      if (hoodMatch) {
+        const n = neighborhoods[hoodMatch];
+        return `<strong>${hoodMatch}</strong> scores <strong>${n[dimKey]}</strong> on ${dimLabels[dimKey]}.<br><br>
+${n[dimKey] < 30 ? 'This is critically low and' : n[dimKey] < 50 ? 'This is below average and' : 'This is moderate, but'} ${dimKey === 'd1' ? 'reflects the physical infrastructure available for free public movement.' : dimKey === 'd2' ? 'reflects the structured free programs running in existing facilities.' : dimKey === 'd3' ? 'reflects how many residents are actually using available resources.' : 'reflects the prevalence of cardiometabolic conditions in the population.'}
+${scoreCard(hoodMatch)}`;
+      }
+      // Rank all by this dimension
+      const ranked = Object.entries(neighborhoods).sort((a,b) => a[1][dimKey] - b[1][dimKey]);
+      return `All 10 neighborhoods ranked by <strong>${dimLabels[dimKey]}</strong> (lowest to highest):<br><br>
+${ranked.map(([name,n],i) => `<div class="data-card" style="margin:4px 0;padding:8px 12px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div><strong style="color:#fff;font-size:11px;">#${i+1} ${name}</strong></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="dr-bar" style="width:80px;"><div class="dr-fill" style="width:${n[dimKey]}%;background:${dimColors[dimKey]}"></div></div>
+      <span style="font-size:12px;font-weight:600;color:#fff;min-width:24px;text-align:right;">${n[dimKey]}</span>
+    </div>
+  </div>
+</div>`).join('')}`;
+    }
+  }
+
+  // ---- 8. OVERVIEW / SUMMARY / ALL ----
+  if (q.includes('overview') || q.includes('summary') || q.includes('all neighborhoods') || q.includes('all 10') || q.includes('everything') || q.includes('full list') || q.includes('show all') || q.includes('show me all') || q.includes('entire') || q.includes('dataset')) {
+    const sorted = Object.entries(neighborhoods).sort((a,b) => a[1].score - b[1].score);
+    const t1 = sorted.filter(([,n])=>n.tier===1).length;
+    const t2 = sorted.filter(([,n])=>n.tier===2).length;
+    return `<strong>Phase 1 Dataset: 10 NYC Neighborhoods</strong><br>
+${t1} Tier 1 (Critical) and ${t2} Tier 2 (Moderate). No Tier 3 neighborhoods in the pilot set.<br><br>
+${sorted.map(([name,n],i)=>`<div class="data-card" style="margin:4px 0;padding:8px 12px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+    <div><strong style="color:#fff;font-size:11px;">#${i+1} ${name}</strong> <span style="font-size:9px;color:var(--s4);">${n.boro}</span></div>
+    <div style="font-family:var(--fd);font-size:18px;color:#fff;">${n.score}</div>
+  </div>
+  <span class="tier-pill ${tierClasses[n.tier]}" style="font-size:7px;">${tierLabels[n.tier]}</span>
+  <span class="constraint-pill ${constraintClasses[n.constraint]}" style="font-size:7px;margin-left:4px;">${constraintLabels[n.constraint]}</span>
+</div>`).join('')}`;
+  }
+
+  // ---- 9. WHAT IS MOI / HOW DOES IT WORK ----
+  if (q.includes('what is moi') || q.includes('how does') || q.includes('how do you') || q.includes('methodology') || q.includes('framework') || q.includes('how is the score') || q.includes('what does moi') || q.includes('what are the dimensions') || q.includes('four dimensions') || q.includes('scoring')) {
+    return `<strong>The Movement Opportunity Index (MOI)</strong> is a composite diagnostic framework that scores NYC neighborhoods on movement equity across four dimensions:<br><br>
+<div class="data-card">
+<div class="dc-label">Four Dimensions</div>
+<div class="dim-row"><span class="dr-tag dt1">D1</span><span class="dr-label">Access to Facilities. Are parks, rec centers, and public spaces physically present?</span></div>
+<div class="dim-row"><span class="dr-tag dt2">D2</span><span class="dr-label">Programming Coverage. Are structured free programs actually running in those spaces?</span></div>
+<div class="dim-row"><span class="dr-tag dt3">D3</span><span class="dr-label">Participation Rates. Are residents using what exists?</span></div>
+<div class="dim-row"><span class="dr-tag dt4">D4</span><span class="dr-label">Disease Burden. Is chronic disease so severe it suppresses capacity for movement?</span></div>
+</div>
+Each dimension scores 0 to 100. The composite MOI is the average of all four. Neighborhoods are classified into three tiers: Tier 1 Critical (below 45), Tier 2 Moderate (45 to 65), and Tier 3 Stable (above 65).<br><br>
+The engine also identifies a <strong>constraint type</strong> for each neighborhood: Supply, Delivery, Coverage, or Burden. This tells decision makers not just the score, but <strong>what type of intervention</strong> will actually move the needle.`;
+  }
+
+  // ---- 10. SCORE / TELL ME ABOUT A SPECIFIC NEIGHBORHOOD ----
   if (hoodMatch) {
     const n = neighborhoods[hoodMatch];
     const lowest = ['d1','d2','d3','d4'].reduce((a,b) => n[a]<n[b]?a:b);
-    return `Here is the current snapshot for <strong>${hoodMatch}</strong>:
+    return `<strong>${hoodMatch}</strong> scores <strong>${n.score} out of 100</strong>, placing it in <strong>${tierLabels[n.tier]}</strong>.<br><br>
+The primary constraint is a <strong>${constraintLabels[n.constraint]}</strong>. The lowest scoring dimension is <strong>${dimLabels[lowest]} (${n[lowest]})</strong>, which is pulling the composite score down most significantly.
 ${scoreCard(hoodMatch)}
 ${rxCard(hoodMatch)}
-You can ask me to compare this neighborhood with another, explain its constraint type, or identify which dimension would move the needle most.`;
+<span class="tl" style="font-size:10px;">Try: "Compare ${hoodMatch} and ${Object.keys(neighborhoods).find(h=>h!==hoodMatch)}" or "What would move the needle for ${hoodMatch}?"</span>`;
   }
 
-  const n = neighborhoods[selectedHood];
-  return `Here is the current snapshot for <strong>${selectedHood}</strong>, the neighborhood selected in the sidebar.<br><br>
-You can ask me to compare neighborhoods, explain a constraint type, show all Tier 1 neighborhoods, or identify which dimension would move the needle most for any community.
-${scoreCard(selectedHood)}`;
+  // ---- 11. FALLBACK ----
+  return `I can help you explore the Phase 1 dataset across 10 NYC neighborhoods. Here are some things you can ask:<br><br>
+<div class="data-card">
+<div class="dc-label">Try these queries</div>
+<div style="font-size:10px;color:var(--s4);line-height:2;">
+<strong style="color:var(--tl);">Scores:</strong> "Tell me about Brownsville" or "What is East Harlem's score?"<br>
+<strong style="color:var(--tl);">Compare:</strong> "Compare Brownsville and Crown Heights"<br>
+<strong style="color:var(--tl);">Constraints:</strong> "Which neighborhoods have a burden constraint?" or "What is the constraint for Mott Haven?"<br>
+<strong style="color:var(--tl);">Tiers:</strong> "Show all Tier 1 neighborhoods" or "Tier 2 in Brooklyn"<br>
+<strong style="color:var(--tl);">Boroughs:</strong> "Show me Brooklyn" or "Bronx neighborhoods"<br>
+<strong style="color:var(--tl);">Dimensions:</strong> "Rank by disease burden" or "Which has the worst facility access?"<br>
+<strong style="color:var(--tl);">Actions:</strong> "What would move the needle for Crown Heights?" or "What intervention does Hunts Point need?"<br>
+<strong style="color:var(--tl);">Overview:</strong> "Show all 10 neighborhoods" or "Give me a summary"<br>
+<strong style="color:var(--tl);">Framework:</strong> "What is MOI?" or "How does the scoring work?"
+</div></div>`;
+}
+
+function constraintExplain(type) {
+  return type==='supply'?'The physical infrastructure is absent or closed. Capital investment in parks, rec centers, or shared use facilities is required before any programming can succeed.'
+    :type==='delivery'?'Facilities exist but structured free programs are not running at sufficient frequency or quality. The fix is activation and programming, not construction.'
+    :type==='coverage'?'Programs and facilities exist but residents are not participating. Outreach, cultural relevance, scheduling, and access barriers are the levers.'
+    :'Chronic disease burden is so severe that it suppresses the population\'s capacity for movement. Clinical partnerships on cardiometabolic screening and prevention must precede recreational programming.';
+}
+
+function constraintExplainShort(type) {
+  return type==='supply'?'Infrastructure is missing. Build first.'
+    :type==='delivery'?'Facilities exist but programs are not running. Activate.'
+    :type==='coverage'?'Programs exist but residents are not participating. Outreach.'
+    :'Disease burden suppresses movement capacity. Health first.';
 }
 
 function addMessage(content, role) {
